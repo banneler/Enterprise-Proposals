@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/@zumer/snapdom/dist/snapdom.js"></script>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     
@@ -215,8 +215,17 @@
                             <button onclick="previewFreeflow('cover')" class="bg-orange-500 text-white text-sm font-semibold px-4 py-2 rounded shadow hover:bg-orange-600">Preview & Commit</button>
                         </div>
                         <input type="text" id="cover-title-input" class="w-full border border-slate-300 p-2 rounded mb-3 bg-slate-50 outline-none focus:border-orange-500 font-bold text-slate-700" placeholder="Document Title (Leave blank for cover pages)" oninput="resetCommit('cover')">
-                        <div id="quill-cover" class="h-64 bg-white"></div>
-                        <p id="warning-cover" class="hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten or add an additional Custom Page.</p>
+                        <div class="flex gap-6 flex-wrap">
+                            <div class="flex-1 min-w-0">
+                                <div id="quill-cover" class="h-64 bg-white"></div>
+                                <p id="warning-cover" class="hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten or add an additional Custom Page.</p>
+                            </div>
+                            <div class="flex-shrink-0 w-full max-w-[280px] rounded-xl bg-slate-50 border border-slate-200 p-4 text-sm text-slate-600">
+                                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3>
+                                <p class="text-xs text-slate-400 mb-2">Inserts at cursor in the cover letter.</p>
+                                <div id="cover-snippets" class="space-y-2"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="custom-text-section" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 border-t-4 border-t-slate-800">
@@ -307,7 +316,10 @@
         <div class="flex flex-col h-[85vh] w-[calc(85vh*0.82)] max-w-full">
             <div class="flex justify-between items-center mb-4 w-full">
                 <h2 class="text-white text-2xl font-bold" id="pdf-preview-title">PDF Preview</h2>
-                <button onclick="closePdfModal()" class="text-white hover:text-red-500 font-bold text-3xl transition leading-none">✕</button>
+                <div class="flex items-center gap-4">
+                    <button id="modal-download-btn" class="hidden bg-white text-orange-600 hover:bg-orange-50 font-bold py-2 px-6 rounded shadow-lg transition">⬇ Download Proposal</button>
+                    <button onclick="closePdfModal()" class="text-white hover:text-red-500 font-bold text-3xl transition leading-none">✕</button>
+                </div>
             </div>
             <div class="bg-[#525659] rounded-lg shadow-2xl flex-1 overflow-hidden border-4 border-slate-700 w-full">
                 <iframe id="pdf-preview-iframe" class="w-full h-full border-0" src=""></iframe>
@@ -354,7 +366,20 @@
     <script>
         // --- State Management ---
         let committedAssets = { cover: null, customText: null, pricing: null, references: null };
-        let currentPreviewTarget = null; 
+        let currentPreviewTarget = null;
+
+        const renderZones = document.getElementById('render-zones');
+        async function captureZoneWithSnapdom(zoneId) {
+            const zone = document.getElementById(zoneId);
+            if (!zone || !renderZones) return null;
+            renderZones.classList.remove('absolute', 'top-[-9999px]', 'left-[-9999px]');
+            await new Promise(r => requestAnimationFrame(r));
+            const capture = await snapdom(zone, { scale: 2, backgroundColor: 'transparent' });
+            const canvas = await capture.toCanvas();
+            const imgData = canvas.toDataURL('image/png');
+            renderZones.classList.add('absolute', 'top-[-9999px]', 'left-[-9999px]');
+            return imgData;
+        } 
 
         // --- Quill RTE Setup & Overflow Checks ---
         var quillOptions = { theme: 'snow', modules: { toolbar: [ ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['clean'] ] } };
@@ -372,6 +397,38 @@
 
         quillCover.on('text-change', () => { resetCommit('cover'); checkQuillHeight(quillCover, 'warning-cover'); });
         quillCustomText.on('text-change', () => { resetCommit('customText'); checkQuillHeight(quillCustomText, 'warning-customText'); });
+
+        const GPC_COVER_SNIPPETS = [
+            { label: 'Exceptional customer service', text: 'What sets our company apart is our exceptional customer service. From the first customer contact through design, turn-up, testing and maintenance, you will work with a local team that\'s committed to developing custom solutions to help you achieve your business goals.' },
+            { label: 'Scalable fiber-driven technology', text: 'From small storefronts to large enterprises, our fully scalable, fiber-driven technology services will accelerate the success of your business.' },
+            { label: 'Why Us: local team & custom solutions', text: 'Exceptional customer service experience. Nebraska- & Indiana-based teams. Custom solutions. High-performing network, high-performing people. 24/7 tech support.' },
+            { label: '24/7 Network Operations Center', text: 'We take great pride in our high-performing fiber network. We monitor around the clock to ensure uptime for our customers. Local network monitoring in Blair, Nebraska. Highly skilled technicians. Rapid response to outages and alarms.' },
+            { label: 'High-performing network, Midwest', text: 'We take pride in being one of the largest privately owned internet service providers for businesses in the Midwest. We build our networks with redundancy and scalability to meet the needs of your business today, while also being able to grow with your business.' },
+            { label: 'Network differentiators', text: '99% buried fiber. Unique routes. MEF-certified. Reliability — 99.99% availability on the core. 20,000+ mile fiber-optic network. Secure fiber-ringed network designed with redundancy, scalability and flexibility. Local presence — technicians strategically located across Nebraska and Southeast Indiana.' },
+            { label: 'Business Internet', text: 'Reliable, high-performance dedicated business internet from 10 Mbps to 400 Gbps.' },
+            { label: 'Managed Ethernet', text: 'Scalable, secure transport across multiple locations, delivering cost savings and efficiency.' }
+        ];
+        function insertIntoQuillCover(text) {
+            const sel = quillCover.getSelection(true);
+            const index = sel ? sel.index : Math.max(0, quillCover.getLength() - 1);
+            quillCover.insertText(index, text, 'user');
+            quillCover.setSelection(index + text.length);
+        }
+        function renderCoverSnippets() {
+            const container = document.getElementById('cover-snippets');
+            if (!container) return;
+            container.innerHTML = '';
+            GPC_COVER_SNIPPETS.forEach(function(s) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'w-full text-left px-3 py-2 rounded-lg border border-slate-200 bg-white hover:border-orange-500 hover:bg-orange-50/80 text-slate-700 text-xs transition shadow-sm';
+                btn.textContent = s.label;
+                btn.title = s.text.slice(0, 80) + (s.text.length > 80 ? '…' : '');
+                btn.addEventListener('click', function() { insertIntoQuillCover(s.text); });
+                container.appendChild(btn);
+            });
+        }
+        renderCoverSnippets();
 
         // --- UI Visibility Toggles based on Slide Selection ---
         function toggleSection(checkboxId, sectionId) {
@@ -516,12 +573,9 @@
 
             await new Promise(r => setTimeout(r, 100));
 
-            const renderZone = document.getElementById('freeflow-render-zone');
-            const canvas = await html2canvas(renderZone, { scale: 2, logging: false });
-            const imgData = canvas.toDataURL('image/png');
-            
+            const imgData = await captureZoneWithSnapdom('freeflow-render-zone');
             document.getElementById('loading-overlay').classList.add('hidden');
-            openModal(imgData, type, `Preview ${type === 'cover' ? 'Cover Letter' : 'Custom Page'}`);
+            if (imgData) openModal(imgData, type, `Preview ${type === 'cover' ? 'Cover Letter' : 'Custom Page'}`);
         }
 
         async function previewPricing() {
@@ -575,12 +629,9 @@
 
     await new Promise(r => setTimeout(r, 150));
 
-    const renderZone = document.getElementById('pricing-render-zone');
-    const canvas = await html2canvas(renderZone, { scale: 2, logging: false, useCORS: true });
-    const imgData = canvas.toDataURL('image/png');
-    
+    const imgData = await captureZoneWithSnapdom('pricing-render-zone');
     document.getElementById('loading-overlay').classList.add('hidden');
-    openModal(imgData, 'pricing', 'Preview Pricing Table');
+    if (imgData) openModal(imgData, 'pricing', 'Preview Pricing Table');
 }
 
         async function previewReferences() {
@@ -608,12 +659,9 @@
 
             await new Promise(r => setTimeout(r, 100));
 
-            const renderZone = document.getElementById('references-render-zone');
-            const canvas = await html2canvas(renderZone, { scale: 2, logging: false });
-            const imgData = canvas.toDataURL('image/png');
-            
+            const imgData = await captureZoneWithSnapdom('references-render-zone');
             document.getElementById('loading-overlay').classList.add('hidden');
-            openModal(imgData, 'references', 'Preview References');
+            if (imgData) openModal(imgData, 'references', 'Preview References');
         }
 
         function openModal(imgSrc, type, title) {
@@ -648,7 +696,9 @@
 
         function closePdfModal() {
             document.getElementById('pdf-preview-modal').classList.add('hidden');
-            document.getElementById('pdf-preview-iframe').src = ""; // Clear memory
+            document.getElementById('pdf-preview-iframe').src = "";
+            const dlBtn = document.getElementById('modal-download-btn');
+            if (dlBtn) dlBtn.classList.add('hidden');
         }
 
         // --- Final PDF Assembly Engine ---
@@ -659,12 +709,6 @@
                 if(li.querySelector('.slide-toggle').checked) activeSlides.push(li.getAttribute('data-filename'));
             });
 
-            // Validation Checks
-            if (activeSlides.includes('CUSTOM_COVER') && !committedAssets.cover) { alert("Please Preview & Commit your Cover Letter."); return; }
-            if (activeSlides.includes('CUSTOM_TEXT') && !committedAssets.customText) { alert("Please Preview & Commit your Custom Page."); return; }
-            if (activeSlides.includes('CUSTOM_REFERENCES') && !committedAssets.references) { alert("Please Preview & Commit your References."); return; }
-            if (activeSlides.includes('CUSTOM_PRICING') && !committedAssets.pricing) { alert("Please Preview & Commit your Pricing Engine."); return; }
-            
             const customPdfFile = document.getElementById('custom-pdf-upload').files[0];
             if (activeSlides.includes('CUSTOM_PDF') && !customPdfFile) { alert("Please select a file for the Custom PDF Upload."); return; }
             
@@ -747,21 +791,66 @@
         pages.forEach(p => finalDoc.addPage(p));
     }
 
-    // Master Loop
+    async function buildPricingZone() {
+        const flexBody = document.getElementById('flex-table-body');
+        flexBody.innerHTML = '';
+        const locations = Array.from(document.querySelectorAll('#locations-container > div')).map(block => ({
+            name: block.querySelector('.loc-name-input').value,
+            items: Array.from(block.querySelectorAll('.line-items-body tr')).map(tr => ({
+                prod: tr.querySelector('.prod-name').value,
+                price: tr.querySelector('.price-input').value,
+                qty: tr.querySelector('.qty-input').value,
+                total: tr.querySelector('.row-total').innerText
+            }))
+        }));
+        locations.forEach(loc => {
+            if (locations.length > 1) {
+                flexBody.insertAdjacentHTML('beforeend', `<div style="display: flex; background-color: #A6A6A6; color: white; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #A6A6A6;"><div style="width: 100%; padding: 8px 16px;">${loc.name || 'LOCATION NAME'}</div></div>`);
+            }
+            loc.items.forEach((item, index) => {
+                const bgColor = locations.length === 1 ? ((index % 2 === 0) ? "#E8E8E8" : "#ffffff") : ((index % 2 === 0) ? "#ffffff" : "#E8E8E8");
+                flexBody.insertAdjacentHTML('beforeend', `<div style="display: flex; background-color: ${bgColor}; border-bottom: 1px solid #DE5A24;"><div style="width: 380px; padding: 14px 16px; border-right: 1px solid #DE5A24; display: flex; align-items: center;">${item.prod}</div><div style="width: 140px; padding: 14px 5px; border-right: 1px solid #DE5A24; text-align: center; display: flex; align-items: center; justify-content: center;">$${item.price}</div><div style="width: 90px; padding: 14px 5px; border-right: 1px solid #DE5A24; text-align: center; display: flex; align-items: center; justify-content: center;">${item.qty}</div><div style="width: 140px; padding: 14px 16px; text-align: center; display: flex; align-items: center; justify-content: center;">${item.total}</div></div>`);
+            });
+        });
+        document.getElementById('render-grand-total-flex').innerText = document.getElementById('grand-total').innerText;
+        document.getElementById('render-term-text-flex').innerText = `Pricing based off ${document.getElementById('contract-term').value || 'XX'}-month term`;
+        await new Promise(r => requestAnimationFrame(r));
+    }
+    async function buildReferencesZone() {
+        const renderBody = document.getElementById('render-references-body');
+        renderBody.innerHTML = '';
+        const refs = Array.from(document.querySelectorAll('.ref-block')).map(b => ({
+            name: b.querySelector('.ref-name').value, org: b.querySelector('.ref-org').value,
+            addr: b.querySelector('.ref-addr').value, phone: b.querySelector('.ref-phone').value, email: b.querySelector('.ref-email').value
+        })).filter(r => r.name || r.org);
+        refs.forEach(ref => {
+            renderBody.insertAdjacentHTML('beforeend', `<div class="mb-6 border-b-4 border-[#DE5A24] pb-6" style="line-height: 1.2;"><div class="text-2xl font-bold text-black" style="line-height: 1.4;">${ref.name}</div><div class="text-xl font-bold text-black" style="line-height: 1.4;">${ref.org}</div><div class="text-xl text-black mb-4" style="line-height: 1.4;">${ref.addr}</div><div class="text-xl text-black" style="line-height: 1.4;">${ref.phone} &nbsp;|&nbsp; ${ref.email}</div></div>`);
+        });
+        await new Promise(r => requestAnimationFrame(r));
+    }
+
     for (const slideFile of payload.slides) {
-        if (slideFile === 'CUSTOM_COVER') { 
-            const title = document.getElementById('cover-title-input').value;
-            await stampImagePage(committedAssets.cover, title); 
-        } 
-        else if (slideFile === 'CUSTOM_TEXT') { 
-            const title = document.getElementById('custom-text-title-input').value;
-            await stampImagePage(committedAssets.customText, title); 
-        } 
-        else if (slideFile === 'CUSTOM_REFERENCES') { 
-            await stampImagePage(committedAssets.references, "References"); 
-        } 
-        else if (slideFile === 'CUSTOM_PRICING') { 
-            await stampImagePage(committedAssets.pricing, "Proposed Pricing"); 
+        if (slideFile === 'CUSTOM_COVER') {
+            document.getElementById('render-freeflow-body').innerHTML = quillCover.root.innerHTML;
+            await new Promise(r => requestAnimationFrame(r));
+            const imgData = await captureZoneWithSnapdom('freeflow-render-zone');
+            await stampImagePage(imgData, document.getElementById('cover-title-input').value);
+        }
+        else if (slideFile === 'CUSTOM_TEXT') {
+            document.getElementById('render-freeflow-body').innerHTML = quillCustomText.root.innerHTML;
+            await new Promise(r => requestAnimationFrame(r));
+            const imgData = await captureZoneWithSnapdom('freeflow-render-zone');
+            await stampImagePage(imgData, document.getElementById('custom-text-title-input').value);
+        }
+        else if (slideFile === 'CUSTOM_REFERENCES') {
+            await buildReferencesZone();
+            const imgData = await captureZoneWithSnapdom('references-render-zone');
+            await stampImagePage(imgData, "References");
+        }
+        else if (slideFile === 'CUSTOM_PRICING') {
+            await buildPricingZone();
+            const imgData = await captureZoneWithSnapdom('pricing-render-zone');
+            await stampImagePage(imgData, "Proposed Pricing");
         }
         else if (slideFile === 'CUSTOM_PDF') { await appendUploadedPdf(payload.customPdfFile); }
         else if (slideFile === 'USAC_RFP') { await appendUploadedPdf(payload.usacFile); }
@@ -839,10 +928,20 @@ if (slideFile === '09_Project.pdf') {
 
     const pdfBytes = await finalDoc.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${(payload.globals.biz || 'GPC').replace(/ /g, '_')}_Proposal.pdf`;
-    link.click();
+    const url = URL.createObjectURL(blob);
+    document.getElementById('pdf-preview-title').innerText = 'Generated Proposal Preview';
+    document.getElementById('pdf-preview-iframe').src = url + '#toolbar=0&navpanes=0&view=FitH';
+    document.getElementById('pdf-preview-modal').classList.remove('hidden');
+    const downloadBtn = document.getElementById('modal-download-btn');
+    downloadBtn.classList.remove('hidden');
+    downloadBtn.onclick = () => {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${(payload.globals.biz || 'GPC').replace(/ /g, '_')}_Proposal.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
 }
 
         // --- Dirty Data Check before leaving page ---
