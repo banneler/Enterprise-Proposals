@@ -305,6 +305,7 @@
             <div id="render-freeflow-body" class="ql-editor" style="overflow: visible !important; height: auto !important; max-height: none !important; padding: 0; font-size: 16px; line-height: 1.5;"></div>
         </div>
 
+     <div id="hidden-pricing-template" class="w-full bg-white text-black gpc-pdf-font" style="width: 750px;"></div>
      <div id="pricing-render-zone" class="w-full bg-white text-black p-4 gpc-pdf-font" style="width: 800px;">
     <div id="flex-table-container" style="border: 2px solid #DE5A24; width: 750px;">
         <div style="display: flex; background-color: #DE5A24; color: white; font-weight: bold; text-transform: uppercase;">
@@ -453,7 +454,7 @@
             locationCount++;
             const locId = `location-${locationCount}`;
             const html = `
-                <div class="border border-slate-200 rounded-lg p-5 bg-white relative" id="${locId}">
+                <div class="location-block border border-slate-200 rounded-lg p-5 bg-white relative" id="${locId}">
                     <button class="absolute top-3 right-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full w-8 h-8 font-bold text-sm remove-location-btn">X</button>
                     <div class="mb-5 pr-10"><input type="text" class="w-full border-b-2 border-slate-200 p-2 text-lg font-bold text-slate-800 outline-none focus:border-orange-500 loc-name-input" placeholder="Location Name or Address (e.g., 123 Main St)" value="${(locName || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"></div>
                     <table class="w-full text-left border-collapse mb-4 min-w-[600px]">
@@ -704,6 +705,12 @@
         }
     }
 
+    function escapeHtml(s) {
+        if (s == null) return '';
+        const str = String(s);
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
 // Centralized Image Stamping & Header Injection
     async function stampImagePage(base64Image, headerText) {
         const page = await getBasePage();
@@ -796,9 +803,108 @@
             await stampImagePage(imgData, "References");
         }
         else if (slideFile === 'CUSTOM_PRICING') {
-            await buildPricingZone();
-            const imgData = await captureZoneWithSnapdom('pricing-render-zone');
-            await stampImagePage(imgData, "Proposed Pricing");
+            const fullWidth = 540;
+            const bottomMargin = 150;
+            const contentTop = 692;
+            let pricingPage;
+            const spawnPricingPage = async (isContinuation) => {
+                const page = await getBasePage();
+                const headerText = isContinuation ? "Proposed Pricing (Cont.)" : "Proposed Pricing";
+                page.drawText(headerText, { x: 44, y: 730, size: 28, font: boldFont, color: rgb(1, 1, 1) });
+                return page;
+            };
+            pricingPage = await spawnPricingPage(false);
+            const locationBlocks = Array.from(document.querySelectorAll('.location-block'));
+            const grandTotalText = document.getElementById('grand-total').innerText;
+            const contractTerm = document.getElementById('contract-term').value || 'XX';
+            const hiddenTemplate = document.getElementById('hidden-pricing-template');
+            let currentY = contentTop;
+
+            for (let i = 0; i < locationBlocks.length; i++) {
+                const block = locationBlocks[i];
+                const locName = (block.querySelector('.loc-name-input') && block.querySelector('.loc-name-input').value) || 'Location';
+                const rows = Array.from(block.querySelectorAll('.line-items-body tr')).map(tr => ({
+                    prod: tr.querySelector('.prod-name') ? tr.querySelector('.prod-name').value : '',
+                    price: tr.querySelector('.price-input') ? tr.querySelector('.price-input').value : '',
+                    qty: tr.querySelector('.qty-input') ? tr.querySelector('.qty-input').value : '1',
+                    total: tr.querySelector('.row-total') ? tr.querySelector('.row-total').textContent : '$0.00'
+                }));
+                const isLast = (i === locationBlocks.length - 1);
+
+                let html = `<div style="width: 750px; border: 2px solid #DE5A24; margin-bottom: 0; box-sizing: border-box;">
+                    <div style="display: flex; background-color: #DE5A24; color: white; font-weight: bold; text-transform: uppercase;">
+                        <div style="width: 380px; padding: 12px 16px; border-right: 1px solid #DE5A24;">PRODUCT</div>
+                        <div style="width: 140px; padding: 12px 5px; text-align: center; border-right: 1px solid #DE5A24;">LIST PRICE</div>
+                        <div style="width: 90px; padding: 12px 5px; text-align: center; border-right: 1px solid #DE5A24;">QTY</div>
+                        <div style="width: 140px; padding: 12px 16px; text-align: center;">TOTAL</div>
+                    </div>`;
+                if (locationBlocks.length > 1) {
+                    html += `<div style="display: flex; background-color: #A6A6A6; color: white; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #A6A6A6;"><div style="width: 100%; padding: 8px 16px;">${escapeHtml(locName)}</div></div>`;
+                }
+                rows.forEach((item, index) => {
+                    const bgColor = (index % 2 === 0) ? '#E8E8E8' : '#ffffff';
+                    const priceVal = item.price !== '' ? `$${parseFloat(item.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '$0.00';
+                    html += `<div style="display: flex; background-color: ${bgColor}; border-bottom: 1px solid #DE5A24;"><div style="width: 380px; padding: 14px 16px; border-right: 1px solid #DE5A24; display: flex; align-items: center;">${escapeHtml(item.prod)}</div><div style="width: 140px; padding: 14px 5px; border-right: 1px solid #DE5A24; text-align: center; display: flex; align-items: center; justify-content: center;">${priceVal}</div><div style="width: 90px; padding: 14px 5px; border-right: 1px solid #DE5A24; text-align: center; display: flex; align-items: center; justify-content: center;">${escapeHtml(item.qty)}</div><div style="width: 140px; padding: 14px 16px; text-align: center; display: flex; align-items: center; justify-content: center;">${escapeHtml(item.total)}</div></div>`;
+                });
+                if (isLast && locationBlocks.length > 0) {
+                    html += `<div style="display: flex; background-color: #12243D; color: white; font-weight: bold; font-size: 1.1rem;"><div style="width: 610px; padding: 16px;">TOTAL MONTHLY COST</div><div style="width: 140px; padding: 16px; text-align: center;">${escapeHtml(grandTotalText)}</div></div>`;
+                }
+                html += '</div>';
+
+                hiddenTemplate.innerHTML = html;
+                hiddenTemplate.style.width = '750px';
+                renderZones.classList.remove('absolute', 'top-[-9999px]', 'left-[-9999px]');
+                await new Promise(r => requestAnimationFrame(r));
+                const captureResult = await snapdom(hiddenTemplate, { scale: 2, backgroundColor: 'transparent' });
+                const canvas = await captureResult.toCanvas();
+                renderZones.classList.add('absolute', 'top-[-9999px]', 'left-[-9999px]');
+
+                const pngImage = await finalDoc.embedPng(canvas.toDataURL('image/png'));
+                const ratio = pngImage.height / pngImage.width;
+                const drawHeight = fullWidth * ratio;
+
+                if (currentY - drawHeight < bottomMargin) {
+                    pricingPage = await spawnPricingPage(true);
+                    currentY = contentTop;
+                }
+
+                pricingPage.drawImage(pngImage, {
+                    x: 36,
+                    y: currentY - drawHeight,
+                    width: fullWidth,
+                    height: drawHeight
+                });
+                currentY -= (drawHeight + 25);
+            }
+
+            if (locationBlocks.length === 0) {
+                const totalOnlyHTML = `<div style="width: 750px; border: 2px solid #DE5A24;"><div style="display: flex; background-color: #12243D; color: white; font-weight: bold; font-size: 1.1rem;"><div style="width: 610px; padding: 16px;">TOTAL MONTHLY COST</div><div style="width: 140px; padding: 16px; text-align: center;">${escapeHtml(grandTotalText)}</div></div></div>`;
+                hiddenTemplate.innerHTML = totalOnlyHTML;
+                hiddenTemplate.style.width = '750px';
+                renderZones.classList.remove('absolute', 'top-[-9999px]', 'left-[-9999px]');
+                await new Promise(r => requestAnimationFrame(r));
+                const totalCapture = await snapdom(hiddenTemplate, { scale: 2, backgroundColor: 'transparent' });
+                const totalCanvas = await totalCapture.toCanvas();
+                renderZones.classList.add('absolute', 'top-[-9999px]', 'left-[-9999px]');
+                const totalPng = await finalDoc.embedPng(totalCanvas.toDataURL('image/png'));
+                const tRatio = totalPng.height / totalPng.width;
+                const tDrawHeight = fullWidth * tRatio;
+                if (currentY - tDrawHeight - 40 < bottomMargin) {
+                    pricingPage = await spawnPricingPage(true);
+                    currentY = contentTop;
+                }
+                pricingPage.drawImage(totalPng, { x: 36, y: currentY - tDrawHeight, width: fullWidth, height: tDrawHeight });
+                currentY -= (tDrawHeight + 25);
+            }
+
+            const termText = `Pricing based off ${contractTerm}-month term`;
+            pricingPage.drawText(termText, {
+                x: 36 + (fullWidth / 2) - (boldFont.widthOfTextAtSize(termText, 11) / 2),
+                y: currentY - 25,
+                size: 11,
+                font: boldFont,
+                color: rgb(0.3, 0.3, 0.3)
+            });
         }
         else if (slideFile === 'CUSTOM_PDF') { await appendUploadedPdf(payload.customPdfFile); }
         else if (slideFile === 'USAC_RFP') { await appendUploadedPdf(payload.usacFile); }
