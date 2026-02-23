@@ -1139,7 +1139,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
         if (slideFile === 'CUSTOM_COVER') {
             const displayTitle = document.getElementById('cover-title-input').value || '';
             const bodyHtml = textToHtml(document.getElementById('cover-body').value);
-            const canvas = await captureInteriorPageGPC(displayTitle, bodyHtml, { fontWeight: '500', extraPaddingTop: 46, fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif', fontSize: '12pt' });
+            const canvas = await captureInteriorPageGPC(displayTitle, bodyHtml, { extraPaddingTop: 46 });
             await addPageFromCanvas(canvas);
             continue;
         }
