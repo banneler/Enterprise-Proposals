@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../JenniB/JenniB"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Enterprise-Proposals"
+	}
+}

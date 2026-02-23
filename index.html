@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPC Proposal Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -27,49 +30,50 @@
         .ql-container.ql-snow { border-color: #cbd5e1; border-bottom-left-radius: 0.5rem; border-bottom-right-radius: 0.5rem; font-family: inherit; font-size: 1rem; }
     </style>
 </head>
-<body class="bg-gray-100 text-slate-800 font-sans h-screen flex flex-col">
+<body class="bg-slate-100 text-slate-800 font-sans h-screen flex flex-col" style="font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;">
 
-    <div id="passcode-screen" class="absolute inset-0 bg-slate-900 flex flex-col items-center justify-center z-50">
+    <div id="passcode-screen" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-500">
         <img src="Proposal_Assets/GPC-White-1-1.webp" alt="GPC Logo" class="h-24 mb-8 drop-shadow-md">
         <div class="bg-white p-8 rounded-lg shadow-xl text-center max-w-sm w-full border-t-4 border-orange-500">
             <h2 class="text-2xl font-bold mb-4 text-slate-900">Proposal Engine</h2>
             <p class="text-slate-600 mb-6 text-sm">Enter the Enterprise Sales passcode to access the generator.</p>
-            <input type="password" id="passcode-input" class="w-full border-2 border-slate-300 p-3 rounded mb-4 focus:outline-none focus:border-orange-500 transition" placeholder="Passcode">
+            <input type="password" id="passcode-input" autocomplete="off" class="w-full border-2 border-slate-300 p-3 rounded mb-4 focus:outline-none focus:border-orange-500 transition" placeholder="Passcode">
             <button id="unlock-btn" class="w-full bg-orange-500 text-white font-bold py-3 rounded hover:bg-orange-600 transition shadow-md">Unlock Engine</button>
             <p id="error-msg" class="text-red-500 text-sm mt-3 hidden">Incorrect passcode. Try again.</p>
         </div>
     </div>
 
-    <div id="main-content" class="hidden flex-1 overflow-hidden flex flex-col">
-        <header class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center z-10 border-b-4 border-orange-500">
-            <div class="flex items-center gap-4">
-                <img src="Proposal_Assets/GPC-White-1-1.webp" alt="GPC Logo" class="h-8">
-                <h1 class="text-xl font-bold tracking-wide border-l border-slate-700 pl-4">Self-Serve Proposal Generator</h1>
+    <div id="main-content" class="flex-1 overflow-hidden flex flex-col">
+        <header id="main-header" class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center z-10 border-b-4 border-orange-500 transition-colors duration-200">
+            <div class="flex items-center gap-4 flex-1 min-w-0">
+                <img src="Proposal_Assets/GPC-White-1-1.webp" alt="GPC Logo" class="h-8 flex-shrink-0">
+                <h1 class="text-xl font-bold tracking-wide border-l border-slate-700 pl-4 flex-shrink-0">Self-Serve Proposal Generator</h1>
+                <p id="header-unsaved-msg" class="hidden text-sm font-medium text-slate-900/90 ml-2 truncate">Unsaved changes</p>
             </div>
-            <button id="generate-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded shadow-lg transition">Generate Proposal PDF</button>
+            <button id="generate-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded shadow-lg transition flex-shrink-0">Generate Proposal PDF</button>
         </header>
 
         <div class="flex-1 flex overflow-hidden">
             
-            <div class="w-1/3 min-w-[350px] bg-white border-r border-slate-200 overflow-y-auto p-6 shadow-inner flex flex-col">
-                <div class="flex gap-2 mb-6 border-b border-slate-200 pb-4">
-                    <button type="button" id="save-project-btn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-3 rounded shadow text-sm">Save (.spec)</button>
-                    <label class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3 rounded border border-slate-300 cursor-pointer text-center text-sm"><input type="file" id="load-project-input" accept=".spec" class="hidden">Load Project</label>
+            <div class="w-96 flex-shrink-0 bg-white border-r border-slate-200 overflow-y-auto p-6 shadow-inner flex flex-col">
+                <div class="flex gap-2 mb-6 border-b border-slate-100 pb-6">
+                    <button type="button" id="save-project-btn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-3 rounded-lg shadow-sm transition text-sm">Save (.spec)</button>
+                    <label class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3 rounded-lg border border-slate-300 shadow-sm transition cursor-pointer text-center text-sm"><input type="file" id="load-project-input" accept=".spec" class="hidden">Load Project</label>
                 </div>
-                <h2 class="text-lg font-bold mb-4 border-b border-slate-200 pb-2 text-slate-800">1. Proposal Properties</h2>
+                <h2 class="text-lg font-bold mb-4 border-b border-slate-100 pb-2 text-slate-800">1. Proposal Properties</h2>
                 <div class="space-y-4 mb-8">
                     <div><label class="block text-sm font-semibold text-slate-700">RFP Name / Proposal Name</label><input type="text" id="global-rfp" maxlength="33" class="w-full border border-slate-300 p-2 rounded mt-1 bg-slate-50 focus:bg-white outline-none focus:border-orange-500"></div>
                     <div><label class="block text-sm font-semibold text-slate-700">Business Name</label><input type="text" id="global-biz" maxlength="33" class="w-full border border-slate-300 p-2 rounded mt-1 bg-slate-50 focus:bg-white outline-none focus:border-orange-500"></div>
                     <div><label class="block text-sm font-semibold text-slate-700">Sales Rep</label><input type="text" id="global-rep" class="w-full border border-slate-300 p-2 rounded mt-1 bg-slate-50 focus:bg-white outline-none focus:border-orange-500"></div>
-                    <div class="flex gap-4 mt-4 border-t border-slate-200 pt-4"><div class="flex-1"><label class="block text-sm font-semibold text-slate-700">Project Start Date</label><input type="text" id="global-start" placeholder="e.g. Q3 2026" class="w-full border border-slate-300 p-2 rounded mt-1 bg-slate-50 focus:bg-white outline-none focus:border-orange-500"></div>
+                    <div class="flex gap-4 mt-4 border-t border-slate-100 pt-4"><div class="flex-1"><label class="block text-sm font-semibold text-slate-700">Project Start Date</label><input type="text" id="global-start" placeholder="e.g. Q3 2026" class="w-full border border-slate-300 p-2 rounded mt-1 bg-slate-50 focus:bg-white outline-none focus:border-orange-500"></div>
                     <div class="flex-1"><label class="block text-sm font-semibold text-slate-700">Project Completion</label><input type="text" id="global-end" placeholder="e.g. Q4 2026" class="w-full border border-slate-300 p-2 rounded mt-1 bg-slate-50 focus:bg-white outline-none focus:border-orange-500"></div>
 </div>
                </div>
 
-                <h2 class="text-lg font-bold mb-4 border-b border-slate-200 pb-2 text-slate-800">2. Proposal Elements (Drag to Reorder)</h2>
+                <h2 class="text-lg font-bold mb-4 border-b border-slate-100 pb-2 text-slate-800">2. Proposal Elements (Drag to Reorder)</h2>
 <ul id="module-list" class="space-y-2 flex-1 overflow-y-auto pb-4">
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group" data-filename="01_Title_Page.pdf">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="01_Title_Page.pdf">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" checked class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Title Page</span>
@@ -78,19 +82,25 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_COVER">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_COVER">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" checked id="toggle-cover-letter" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Cover Letter</span>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_TEXT">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_TEXT">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" id="toggle-custom-text" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Custom Page</span>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group" data-filename="02_Why_GPC.pdf">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_IMPACT">
+        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <input type="checkbox" id="toggle-impact-roi" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
+        <span class="flex-1 font-medium text-sm text-slate-700">Impact & ROI</span>
+    </li>
+    
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="02_Why_GPC.pdf">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" checked class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Why GPC?</span>
@@ -99,7 +109,7 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group" data-filename="03_About_GPC.pdf">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="03_About_GPC.pdf">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" checked class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">About GPC</span>
@@ -108,19 +118,19 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_REFERENCES">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_REFERENCES">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" checked id="toggle-references" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">References</span>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_PRICING">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_PRICING">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" checked id="toggle-pricing" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Proposed Pricing</span>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group" data-filename="04_NOC_Monitoring.pdf">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="04_NOC_Monitoring.pdf">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">24-Hour NOC Monitoring</span>
@@ -129,7 +139,7 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group" data-filename="05_DIA.pdf">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="05_DIA.pdf">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Dedicated Internet Access (DIA)</span>
@@ -138,7 +148,7 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group" data-filename="06_SIA.pdf">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="06_SIA.pdf">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Standard Internet Access (SIA)</span>
@@ -147,7 +157,7 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group" data-filename="07_CaseStudy.pdf">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="07_CaseStudy.pdf">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Boys Town Case Study</span>
@@ -156,7 +166,7 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group" data-filename="08_SPIN.pdf">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="08_SPIN.pdf">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">SPIN ID Number</span>
@@ -165,7 +175,7 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group" data-filename="09_Project.pdf">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="09_Project.pdf">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Project Implementation Plan</span>
@@ -174,7 +184,7 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group" data-filename="10_Leadership.pdf">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="10_Leadership.pdf">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Senior Leadership</span>
@@ -183,7 +193,7 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group" data-filename="11_Escalation.pdf">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="11_Escalation.pdf">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Escalation Process</span>
@@ -192,13 +202,13 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-slate-400" data-filename="CUSTOM_PDF">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-slate-400" data-filename="CUSTOM_PDF">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" id="toggle-custom-pdf" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Upload Custom PDF</span>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-slate-400" data-filename="USAC_RFP">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-slate-400" data-filename="USAC_RFP">
         <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
         <input type="checkbox" id="toggle-usac" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">USAC Original RFP</span>
@@ -207,67 +217,121 @@
 </ul>
             </div>
 
-            <div class="flex-1 bg-slate-100 p-8 overflow-y-auto" id="scroll-container">
-                <div class="max-w-5xl mx-auto space-y-8">
+            <div class="flex-1 bg-slate-100 p-5 overflow-y-auto" id="scroll-container">
+                <div class="w-full max-w-[1680px] mx-auto space-y-8">
                     
-                    <div id="cover-letter-section" class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 border-t-4 border-t-slate-800">
-                        <h3 class="text-lg font-bold text-slate-900 mb-4">Cover Letter</h3>
-                        <input type="text" id="cover-title-input" class="w-full border border-slate-300 p-2 rounded mb-3 bg-slate-50 outline-none focus:border-orange-500 font-bold text-slate-700" placeholder="Document Title (Leave blank for cover pages)">
-                        <div class="flex gap-6 flex-wrap">
-                            <div class="flex-1 min-w-0">
-                                <div id="quill-cover" class="h-64 bg-white"></div>
-                                <p id="warning-cover" class="hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten or add an additional Custom Page.</p>
+                    <div id="cover-letter-section" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
+                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2">
+                            <h3 class="text-2xl font-bold text-slate-800">Cover Letter</h3>
+                        </div>
+                        <input type="text" id="cover-title-input" class="w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-orange-500 font-semibold text-slate-700" placeholder="Document Title (Leave blank for cover pages)">
+                        <div class="flex gap-6 flex-nowrap items-start">
+                            <div class="w-[680px] flex-shrink-0">
+                                <div id="quill-cover" class="h-[624px] bg-white"></div>
                             </div>
-                            <div class="flex-shrink-0 w-full max-w-[280px] rounded-xl bg-slate-50 border border-slate-200 p-4 text-sm text-slate-600">
-                                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3>
-                                <p class="text-xs text-slate-400 mb-2">Inserts at cursor in the cover letter.</p>
-                                <div id="cover-snippets" class="space-y-2"></div>
+                            <div class="flex-1 min-w-0 flex gap-4 h-[624px] overflow-hidden">
+                                <div class="w-[260px] h-[624px] flex-shrink-0 flex flex-col gap-4 overflow-hidden">
+                                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600 flex-shrink-0">
+                                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3>
+                                        <p class="text-xs text-slate-400 mb-2">Inserts at cursor in the cover letter.</p>
+                                        <div id="cover-snippets" class="space-y-2 overflow-auto min-h-0"></div>
+                                    </div>
+                                    <div class="bg-white shadow-sm border border-slate-200 rounded-xl flex-1 min-h-0 flex flex-col overflow-hidden">
+                                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 px-4 py-3 flex-shrink-0">Proposal Readiness</h3>
+                                        <div class="p-4 space-y-2 border-0 border-t border-slate-200 flex-1 min-h-0 overflow-auto">
+                                            <label class="flex items-center gap-2 text-[11px] leading-tight text-slate-700"><input type="checkbox" id="check-rfp-biz" class="text-orange-500"> RFP & Business name filled</label>
+                                            <label class="flex items-center gap-2 text-[11px] leading-tight text-slate-700"><input type="checkbox" id="check-cover" class="text-orange-500"> Cover letter personalized</label>
+                                            <label class="flex items-center gap-2 text-[11px] leading-tight text-slate-700"><input type="checkbox" id="check-pricing" class="text-orange-500"> Pricing reviewed</label>
+                                            <label class="flex items-center gap-2 text-[11px] leading-tight text-slate-700"><input type="checkbox" id="check-ready" class="text-orange-500"> Ready to generate</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-[200px] h-[624px] min-h-0 flex flex-col overflow-hidden">
+                                    <div class="bg-white shadow-sm border border-slate-200 rounded-xl h-full flex flex-col overflow-hidden">
+                                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 px-4 py-3 flex-shrink-0">Proposal Notes</h3>
+                                        <textarea id="discovery-scratchpad" class="w-full border-0 border-t border-slate-200 p-4 text-sm text-slate-800 bg-slate-50 focus:bg-white outline-none flex-1 min-h-0 resize-none" placeholder="Sites, circuit counts, bandwidth needs, contact names, quick math, raw notes…"></textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div id="custom-text-section" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 border-t-4 border-t-slate-800">
-                        <h3 class="text-lg font-bold text-slate-900 mb-4">Custom Page</h3>
-                        <input type="text" id="custom-text-title-input" class="w-full border border-slate-300 p-2 rounded mb-3 bg-slate-50 outline-none focus:border-orange-500 font-bold text-slate-700" placeholder="Document Title (Leave blank for no header)">
-                        <div id="quill-custom-text" class="h-64 bg-white"></div>
-                        <p id="warning-customText" class="hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten.</p>
+                    <div id="custom-text-section" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
+                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2">
+                            <h3 class="text-2xl font-bold text-slate-800">Custom Page</h3>
+                        </div>
+                        <input type="text" id="custom-text-title-input" class="w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-orange-500 font-semibold text-slate-700" placeholder="Document Title (Leave blank for no header)">
+                        <div class="flex gap-6 flex-nowrap items-start">
+                            <div class="flex-1 min-w-[500px]">
+                                <div id="quill-custom-text" class="h-64 bg-white"></div>
+                                <p id="warning-customText" class="hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten.</p>
+                            </div>
+                            <div class="w-[300px] flex-shrink-0 flex flex-col gap-4"></div>
+                        </div>
                     </div>
 
-                    <div id="custom-pdf-section" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 border-t-4 border-t-slate-400">
-                        <h3 class="text-lg font-bold mb-2 text-slate-900">Upload Custom PDF (Exec Summary, etc.)</h3>
+                    <div id="custom-pdf-section" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
+                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2">
+                            <h3 class="text-2xl font-bold text-slate-800">Upload Custom PDF (Exec Summary, etc.)</h3>
+                        </div>
                         <input type="file" id="custom-pdf-upload" class="hidden" accept="application/pdf">
-                        <div class="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center bg-slate-50 hover:bg-orange-50 hover:border-orange-400 transition cursor-pointer group" onclick="document.getElementById('custom-pdf-upload').click()">
+                        <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50 hover:bg-orange-50 hover:border-orange-400 transition cursor-pointer group" onclick="document.getElementById('custom-pdf-upload').click()">
                             <svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-orange-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                             <span id="custom-pdf-filename" class="mt-2 block text-slate-600 font-medium group-hover:text-orange-600">Drag and drop Custom PDF here, or click to browse</span>
                         </div>
                     </div>
 
-                    <div id="references-section" class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 border-t-4 border-t-slate-800">
-                        <h3 class="text-lg font-bold text-slate-900 mb-4">References</h3>
+                    <div id="references-section" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
+                        <div class="flex items-center mb-6 border-b border-slate-100 pb-2">
+                            <h3 class="text-2xl font-bold text-slate-800">References</h3>
+                        </div>
                         <div class="grid grid-cols-2 gap-6" id="references-container">
                             </div>
                     </div>
 
-                    <div id="pricing-section" class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex flex-col border-t-4 border-t-slate-800">
-                        <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-3">
-                            <h3 class="text-lg font-bold text-slate-900">Dynamic Pricing Engine</h3>
-                            <button id="add-location-btn" class="bg-slate-800 text-white text-sm font-semibold px-4 py-2 rounded shadow hover:bg-slate-900">+ Add Location</button>
+                    <div id="pricing-section" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300 flex flex-col">
+                        <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-2">
+                            <h3 class="text-2xl font-bold text-slate-800">Dynamic Pricing Engine</h3>
+                            <button id="add-location-btn" class="bg-slate-800 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm hover:bg-slate-900 transition">+ Add Location</button>
                         </div>
                         <div class="mb-6 w-1/3 min-w-[200px]">
                             <label class="block text-sm font-semibold text-slate-700">Contract Term (Months)</label>
-                            <input type="text" id="contract-term" class="w-full border border-slate-300 p-2 rounded mt-1 bg-slate-50 focus:bg-white outline-none focus:border-orange-500" placeholder="e.g. 36">
+                            <input type="text" id="contract-term" class="w-full border border-slate-300 p-2 rounded-lg mt-1 bg-slate-50 focus:bg-white outline-none focus:border-orange-500 transition" placeholder="e.g. 36">
                         </div>
                         <div id="locations-container" class="space-y-8"></div>
-                        <div class="mt-8 border-t-4 border-slate-200 pt-6 flex justify-between items-center bg-slate-50 p-6 rounded-lg shadow-inner">
+                        <div class="mt-6 border-t border-slate-200 pt-6 flex justify-between items-center bg-slate-50 p-6 rounded-lg">
                             <span class="text-xl font-bold text-slate-800 uppercase">Total Monthly Cost:</span>
                             <span id="grand-total" class="text-3xl font-extrabold text-orange-600">$0.00</span>
                         </div>
                     </div>
 
-                    <div id="usac-upload-section" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 border-t-4 border-t-slate-400">
-                        <h3 class="text-lg font-bold mb-2 text-slate-900">USAC Original RFP Upload</h3>
+                    <div id="impact-roi-section" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
+                        <div class="flex items-center mb-6 border-b border-slate-100 pb-2">
+                            <h3 class="text-2xl font-bold text-slate-800">Impact & ROI</h3>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6 mb-6">
+                            <div class="rounded-xl border border-slate-200 p-5 bg-slate-50 shadow-sm">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-2 mb-3">Current State</h4>
+                                <textarea id="impact-current" class="w-full border border-slate-300 p-2 rounded-lg text-sm text-slate-800 bg-white min-h-[100px] resize-y outline-none focus:border-orange-500 transition" placeholder="Current infrastructure, pain points…"></textarea>
+                            </div>
+                            <div class="rounded-xl border border-slate-200 border-l-4 border-l-orange-500 p-5 bg-slate-50 shadow-sm">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-2 mb-3">Proposed Solution</h4>
+                                <textarea id="impact-proposed" class="w-full border border-slate-300 p-2 rounded-lg text-sm text-slate-800 bg-white min-h-[100px] resize-y outline-none focus:border-orange-500 transition" placeholder="Proposed solution, benefits…"></textarea>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 border-t border-slate-100 pt-4">
+                            <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Current monthly ($)</label><input type="number" id="impact-current-cost" placeholder="0" class="w-full border border-slate-300 p-2 rounded-lg text-slate-800 bg-white"></div>
+                            <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Proposed monthly ($)</label><input type="number" id="impact-proposed-cost" placeholder="0" class="w-full border border-slate-300 p-2 rounded-lg text-slate-800 bg-white"></div>
+                            <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Net impact</label><div id="impact-net" class="w-full border border-slate-200 p-2 rounded-lg text-slate-800 bg-slate-50 font-semibold">$0</div></div>
+                        </div>
+                    </div>
+
+                    <div id="usac-upload-section" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
+                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2">
+                            <h3 class="text-2xl font-bold text-slate-800">USAC Original RFP Upload</h3>
+                        </div>
                         <input type="file" id="usac-upload" class="hidden" accept="application/pdf">
-                        <div class="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center bg-slate-50 hover:bg-orange-50 hover:border-orange-400 transition cursor-pointer group" onclick="document.getElementById('usac-upload').click()">
+                        <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50 hover:bg-orange-50 hover:border-orange-400 transition cursor-pointer group" onclick="document.getElementById('usac-upload').click()">
                             <svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-orange-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                             <span id="usac-filename" class="mt-2 block text-slate-600 font-medium group-hover:text-orange-600">Drag and drop USAC RFP PDF here, or click to browse</span>
                         </div>
@@ -294,10 +358,14 @@
         </div>
     </div>
 
-    <div id="loading-overlay" class="hidden absolute inset-0 bg-slate-900 bg-opacity-80 flex flex-col items-center justify-center z-[70]">
-        <svg class="animate-spin h-12 w-12 text-orange-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-        <h2 class="text-xl font-bold text-white">Assembling Proposal...</h2>
+    <div id="loading-overlay" class="hidden fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-md">
+        <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl px-12 py-10 flex flex-col items-center">
+            <div class="animate-spin rounded-full h-20 w-20 border-b-4 mb-6 border-orange-500"></div>
+            <p class="text-xl font-bold tracking-widest animate-pulse text-white">Assembling Proposal...</p>
+        </div>
     </div>
+
+    <div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[150] flex flex-col gap-2 pointer-events-none" aria-live="polite"></div>
 
     <div id="render-zones" class="absolute top-[-9999px] left-[-9999px] w-[800px] bg-white p-12 gpc-pdf-font">
         
@@ -331,8 +399,52 @@
         </div>
     </div>
 
+    <!-- Hybrid chassis: off-screen wrappers for Snapdom (swap .png to .svg in production) -->
+    <div id="gpc-title-render-wrapper" class="absolute -top-[9999px] -left-[9999px] w-[8.5in] h-[11in]"></div>
+    <div id="gpc-interior-render-wrapper" class="absolute -top-[9999px] -left-[9999px]"></div>
+
     <script>
         const renderZones = document.getElementById('render-zones');
+        const ASSETS_BASE = new URL('Proposal_Assets/', window.location.href).href;
+        const GPC_TITLE_BG = ASSETS_BASE + '01_Title_Page.png';
+        const GPC_INTERIOR_BG = ASSETS_BASE + 'GPC_Blank_Letterhead.png';
+
+        function showToast(message, type) {
+            type = type === 'error' ? 'error' : 'success';
+            var container = document.getElementById('toast-container');
+            if (!container) return;
+            var el = document.createElement('div');
+            el.className = 'toast px-4 py-3 text-sm font-medium shadow-lg ' + (type === 'error' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white');
+            el.textContent = message;
+            container.appendChild(el);
+            setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 3500);
+        }
+
+        var isDirty = false, _suppressDirty = false;
+        function setDirty(value) {
+            isDirty = !!value;
+            var header = document.getElementById('main-header');
+            var msg = document.getElementById('header-unsaved-msg');
+            if (header) {
+                if (isDirty) { header.classList.remove('bg-slate-900'); header.classList.add('bg-slate-300'); }
+                else { header.classList.add('bg-slate-900'); header.classList.remove('bg-slate-300'); }
+            }
+            if (msg) msg.classList.toggle('hidden', !isDirty);
+        }
+        window.addEventListener('beforeunload', function(e) {
+            if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+        });
+        document.body.addEventListener('input', function(e) {
+            if (_suppressDirty) return;
+            var t = e.target;
+            if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT') && t.id !== 'passcode-input' && t.id !== 'custom-pdf-upload' && t.id !== 'usac-upload') setDirty(true);
+        });
+        document.body.addEventListener('change', function(e) {
+            if (_suppressDirty) return;
+            var t = e.target;
+            if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT') && t.id !== 'passcode-input' && t.id !== 'custom-pdf-upload' && t.id !== 'usac-upload') setDirty(true);
+        });
+
         async function captureZoneWithSnapdom(zoneId) {
             const zone = document.getElementById(zoneId);
             if (!zone || !renderZones) return null;
@@ -359,7 +471,6 @@
             }
         }
 
-        quillCover.on('text-change', () => checkQuillHeight(quillCover, 'warning-cover'));
         quillCustomText.on('text-change', () => checkQuillHeight(quillCustomText, 'warning-customText'));
 
         const GPC_COVER_SNIPPETS = [
@@ -385,7 +496,7 @@
             GPC_COVER_SNIPPETS.forEach(function(s) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'w-full text-left px-3 py-2 rounded-lg border border-slate-200 bg-white hover:border-orange-500 hover:bg-orange-50/80 text-slate-700 text-xs transition shadow-sm';
+                btn.className = 'w-full text-left px-3 py-2 rounded-lg border border-slate-200 bg-white hover:border-orange-500 hover:bg-orange-50/80 text-slate-700 text-[11px] leading-tight transition shadow-sm';
                 btn.textContent = s.label;
                 btn.title = s.text.slice(0, 80) + (s.text.length > 80 ? '…' : '');
                 btn.addEventListener('click', function() { insertIntoQuillCover(s.text); });
@@ -402,22 +513,40 @@
         }
         toggleSection('toggle-cover-letter', 'cover-letter-section');
         toggleSection('toggle-custom-text', 'custom-text-section');
+        toggleSection('toggle-impact-roi', 'impact-roi-section');
         toggleSection('toggle-custom-pdf', 'custom-pdf-section');
         toggleSection('toggle-references', 'references-section');
         toggleSection('toggle-pricing', 'pricing-section');
         toggleSection('toggle-usac', 'usac-upload-section');
 
-        // --- Passcode & UI ---
-        const TEAM_PASSCODE = 'GPC-ENTERPRISE'; 
+        // --- Passcode & UI (Jenni B pattern: sessionStorage, fade-out) ---
+        const TEAM_PASSCODE = 'GPC-ENTERPRISE';
+        const GPC_UNLOCK_KEY = 'gpc_unlocked';
         document.getElementById('unlock-btn').addEventListener('click', attemptUnlock);
-        document.getElementById('passcode-input').addEventListener('keypress', e => { if (e.key === 'Enter') attemptUnlock(); });
+        document.getElementById('passcode-input').addEventListener('keypress', function(e) { if (e.key === 'Enter') attemptUnlock(); });
         function attemptUnlock() {
-            if(document.getElementById('passcode-input').value === TEAM_PASSCODE) {
-                document.getElementById('passcode-screen').classList.add('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
-            } else { document.getElementById('error-msg').classList.remove('hidden'); }
+            var input = document.getElementById('passcode-input').value.trim();
+            var errorMsg = document.getElementById('error-msg');
+            var screen = document.getElementById('passcode-screen');
+            var mainContent = document.getElementById('main-content');
+            if (input === TEAM_PASSCODE) {
+                screen.style.opacity = '0';
+                setTimeout(function() {
+                    screen.style.display = 'none';
+                    mainContent.classList.remove('hidden');
+                }, 500);
+                try { sessionStorage.setItem(GPC_UNLOCK_KEY, 'true'); } catch (e) {}
+            } else {
+                errorMsg.classList.remove('hidden');
+                document.getElementById('passcode-input').value = '';
+                document.getElementById('passcode-input').focus();
+            }
         }
-        new Sortable(document.getElementById('module-list'), { animation: 150, handle: '.handle', ghostClass: 'bg-orange-50' });
+        if (sessionStorage.getItem(GPC_UNLOCK_KEY) === 'true') {
+            document.getElementById('passcode-screen').style.display = 'none';
+            document.getElementById('main-content').classList.remove('hidden');
+        }
+        new Sortable(document.getElementById('module-list'), { animation: 150, handle: '.handle', ghostClass: 'bg-orange-50', onEnd: function() { if (!_suppressDirty) setDirty(true); } });
 
         // --- File Upload Handlers ---
         document.getElementById('usac-upload').addEventListener('change', e => {
@@ -431,7 +560,7 @@
         const refsContainer = document.getElementById('references-container');
         for(let i=1; i<=4; i++) {
             refsContainer.insertAdjacentHTML('beforeend', `
-                <div class="space-y-2 border p-4 rounded bg-slate-50 ref-block">
+                <div class="space-y-2 border border-slate-200 p-5 rounded-xl bg-slate-50 shadow-sm ref-block">
                     <h4 class="font-bold text-slate-700 text-sm uppercase">Reference ${i}</h4>
                     <input type="text" placeholder="Reference Name" class="w-full border border-slate-300 p-2 rounded text-sm ref-name outline-none focus:border-orange-500">
                     <input type="text" placeholder="Organization Name" class="w-full border border-slate-300 p-2 rounded text-sm ref-org outline-none focus:border-orange-500">
@@ -522,6 +651,16 @@
             document.getElementById('grand-total').textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(gt);
         }
 
+        function updateImpactNet() {
+            var cur = parseFloat(document.getElementById('impact-current-cost').value) || 0;
+            var prop = parseFloat(document.getElementById('impact-proposed-cost').value) || 0;
+            var net = prop - cur;
+            var el = document.getElementById('impact-net');
+            if (el) el.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(net);
+        }
+        if (document.getElementById('impact-current-cost')) document.getElementById('impact-current-cost').addEventListener('input', updateImpactNet);
+        if (document.getElementById('impact-proposed-cost')) document.getElementById('impact-proposed-cost').addEventListener('input', updateImpactNet);
+
         document.getElementById('contract-term').addEventListener('input', () => {});
 
         // --- Save / Load Project ---
@@ -552,8 +691,20 @@
                         qty: tr.querySelector('.qty-input').value
                     }))
                 })),
+                discoveryScratchpad: document.getElementById('discovery-scratchpad').value,
+                readiness: {
+                    rfpBiz: document.getElementById('check-rfp-biz').checked,
+                    cover: document.getElementById('check-cover').checked,
+                    pricing: document.getElementById('check-pricing').checked,
+                    ready: document.getElementById('check-ready').checked
+                },
+                impactCurrent: document.getElementById('impact-current').value,
+                impactProposed: document.getElementById('impact-proposed').value,
+                impactCurrentCost: document.getElementById('impact-current-cost').value,
+                impactProposedCost: document.getElementById('impact-proposed-cost').value,
                 modules: []
             };
+            setDirty(false);
             document.querySelectorAll('#module-list li').forEach(li => {
                 const cb = li.querySelector('input.slide-toggle');
                 projectData.modules.push({
@@ -573,6 +724,7 @@
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
+            _suppressDirty = true;
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
@@ -607,6 +759,19 @@
                             addLocationBlock();
                         }
                     }
+                    if (data.discoveryScratchpad != null) document.getElementById('discovery-scratchpad').value = data.discoveryScratchpad;
+                    if (data.readiness) {
+                        var r = data.readiness;
+                        if (document.getElementById('check-rfp-biz')) document.getElementById('check-rfp-biz').checked = !!r.rfpBiz;
+                        if (document.getElementById('check-cover')) document.getElementById('check-cover').checked = !!r.cover;
+                        if (document.getElementById('check-pricing')) document.getElementById('check-pricing').checked = !!r.pricing;
+                        if (document.getElementById('check-ready')) document.getElementById('check-ready').checked = !!r.ready;
+                    }
+                    if (data.impactCurrent != null) document.getElementById('impact-current').value = data.impactCurrent;
+                    if (data.impactProposed != null) document.getElementById('impact-proposed').value = data.impactProposed;
+                    if (data.impactCurrentCost != null) document.getElementById('impact-current-cost').value = data.impactCurrentCost;
+                    if (data.impactProposedCost != null) document.getElementById('impact-proposed-cost').value = data.impactProposedCost;
+                    if (typeof updateImpactNet === 'function') updateImpactNet();
                     if (data.modules && data.modules.length) {
                         data.modules.forEach(m => {
                             const li = document.querySelector(`#module-list li[data-filename="${m.filename}"]`);
@@ -617,16 +782,19 @@
                         });
                         document.getElementById('toggle-cover-letter').dispatchEvent(new Event('change'));
                         document.getElementById('toggle-custom-text').dispatchEvent(new Event('change'));
+                        if (document.getElementById('toggle-impact-roi')) document.getElementById('toggle-impact-roi').dispatchEvent(new Event('change'));
                         document.getElementById('toggle-references').dispatchEvent(new Event('change'));
                         document.getElementById('toggle-pricing').dispatchEvent(new Event('change'));
                         document.getElementById('toggle-custom-pdf').dispatchEvent(new Event('change'));
                         document.getElementById('toggle-usac').dispatchEvent(new Event('change'));
                     }
-                    alert('Project loaded.');
+                    showToast('Project loaded.', 'success');
                 } catch (err) {
                     console.error(err);
-                    alert('Error loading project file.');
+                    showToast('Error loading project file.', 'error');
                 }
+                _suppressDirty = false;
+                setDirty(false);
             };
             reader.readAsText(file);
             event.target.value = '';
@@ -673,7 +841,7 @@
 
             document.getElementById('loading-overlay').classList.remove('hidden');
             try { await generatePDFDocument(payload); } 
-            catch (error) { console.error(error); alert("Error generating PDF. Check console."); } 
+            catch (error) { console.error(error); showToast('Error generating PDF. Check console.', 'error'); } 
             finally { document.getElementById('loading-overlay').classList.add('hidden'); }
         });
 
@@ -709,6 +877,54 @@
         if (s == null) return '';
         const str = String(s);
         return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    async function captureInteriorPageGPC(headerTitle, contentHtml, options) {
+        options = options || {};
+        const fontWeight = options.fontWeight != null ? options.fontWeight : '';
+        const extraPaddingTop = options.extraPaddingTop != null ? options.extraPaddingTop : 0;
+        const fontFamily = options.fontFamily != null ? options.fontFamily : '';
+        const fontSize = options.fontSize != null ? options.fontSize : '';
+        const wrapper = document.getElementById('gpc-interior-render-wrapper');
+        wrapper.innerHTML = '';
+        const card = document.createElement('div');
+        card.className = 'gpc-pdf-font';
+        card.style.cssText = 'width: 8.5in; height: 11in; position: relative; box-sizing: border-box; background: url("' + GPC_INTERIOR_BG + '") no-repeat 0 0; background-size: 100% 100%;';
+        const titleText = document.createElement('div');
+        titleText.style.cssText = 'position: absolute; left: 72px; top: 0.5in; color: white; font-size: 28px; font-weight: bold;';
+        titleText.textContent = (headerTitle && headerTitle.trim()) ? headerTitle : '\u00A0';
+        card.appendChild(titleText);
+        const contentArea = document.createElement('div');
+        const contentTop = 100;
+        const baseFontSize = fontSize || '11pt';
+        contentArea.style.cssText = 'position: absolute; left: 72px; right: 72px; top: ' + contentTop + 'px; bottom: 72px; overflow: hidden; font-size: ' + baseFontSize + '; line-height: 1.4;' + (extraPaddingTop ? ' padding-top: ' + extraPaddingTop + 'px;' : '') + (fontFamily ? ' font-family: ' + fontFamily + ';' : '');
+        contentArea.innerHTML = fontWeight ? ('<div style="font-weight: ' + fontWeight + ';">' + contentHtml + '</div>') : contentHtml;
+        card.appendChild(contentArea);
+        wrapper.appendChild(card);
+        await new Promise(r => requestAnimationFrame(r));
+        const result = await snapdom(card, { scale: 2, backgroundColor: 'white' });
+        const canvas = await result.toCanvas();
+        return canvas;
+    }
+
+    async function buildTitlePageHybrid() {
+        const rfpText = (document.getElementById('global-rfp').value || '').substring(0, 33);
+        const bizText = (document.getElementById('global-biz').value || '').substring(0, 33);
+        const repText = (document.getElementById('global-rep').value || '').substring(0, 33);
+        const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        const wrapper = document.getElementById('gpc-title-render-wrapper');
+        wrapper.innerHTML = '';
+        const card = document.createElement('div');
+        card.style.cssText = 'width: 8.5in; height: 11in; position: relative; box-sizing: border-box; background: url("' + GPC_TITLE_BG + '") no-repeat 0 0; background-size: 100% 100%;';
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position: absolute; right: 72px; left: calc(58% - 0.7in); bottom: calc(45px + 0.25in); color: white; font-family: Helvetica, Arial, sans-serif;';
+        overlay.innerHTML = '<div style="font-size: 31px; font-weight: bold; margin-bottom: 6px;">' + escapeHtml(bizText) + '</div><div style="font-size: 22px; font-weight: bold; margin-bottom: 6px;">' + escapeHtml(rfpText) + '</div><div style="font-size: 14px; margin-bottom: 5px;">Presented by: ' + escapeHtml(repText) + '</div><div style="font-size: 12px;">' + escapeHtml(today) + '</div>';
+        card.appendChild(overlay);
+        wrapper.appendChild(card);
+        await new Promise(r => requestAnimationFrame(r));
+        const result = await snapdom(card, { scale: 2, backgroundColor: 'white' });
+        const canvas = await result.toCanvas();
+        return canvas;
     }
 
 // Centralized Image Stamping & Header Injection
@@ -784,44 +1000,91 @@
         await new Promise(r => requestAnimationFrame(r));
     }
 
+    async function addPageFromCanvas(canvas) {
+        const pngImage = await finalDoc.embedPng(canvas.toDataURL('image/png'));
+        const page = finalDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+        page.drawImage(pngImage, { x: 0, y: 0, width: PAGE_WIDTH, height: PAGE_HEIGHT });
+    }
+
     for (const slideFile of payload.slides) {
-        if (slideFile === 'CUSTOM_COVER') {
-            document.getElementById('render-freeflow-body').innerHTML = quillCover.root.innerHTML;
-            await new Promise(r => requestAnimationFrame(r));
-            const imgData = await captureZoneWithSnapdom('freeflow-render-zone');
-            await stampImagePage(imgData, document.getElementById('cover-title-input').value);
+        if (slideFile === '01_Title_Page.pdf') {
+            const canvas = await buildTitlePageHybrid();
+            await addPageFromCanvas(canvas);
+            continue;
         }
-        else if (slideFile === 'CUSTOM_TEXT') {
-            document.getElementById('render-freeflow-body').innerHTML = quillCustomText.root.innerHTML;
-            await new Promise(r => requestAnimationFrame(r));
-            const imgData = await captureZoneWithSnapdom('freeflow-render-zone');
-            await stampImagePage(imgData, document.getElementById('custom-text-title-input').value);
+        if (slideFile === 'CUSTOM_COVER') {
+            const displayTitle = document.getElementById('cover-title-input').value || '';
+            const bodyHtml = quillCover.root.innerHTML;
+            const canvas = await captureInteriorPageGPC(displayTitle, bodyHtml, { fontWeight: '500', extraPaddingTop: 46, fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif', fontSize: '12pt' });
+            await addPageFromCanvas(canvas);
+            continue;
+        }
+        if (slideFile === 'CUSTOM_TEXT') {
+            const customTitle = document.getElementById('custom-text-title-input').value || '';
+            const bodyHtml = quillCustomText.root.innerHTML;
+            const canvas = await captureInteriorPageGPC(customTitle, bodyHtml);
+            await addPageFromCanvas(canvas);
+            continue;
+        }
+        else if (slideFile === 'CUSTOM_IMPACT') {
+            var cur = document.getElementById('impact-current').value || '';
+            var prop = document.getElementById('impact-proposed').value || '';
+            var curCost = document.getElementById('impact-current-cost').value || '';
+            var propCost = document.getElementById('impact-proposed-cost').value || '';
+            var netEl = document.getElementById('impact-net');
+            var netTextRaw = netEl ? netEl.textContent : '$0';
+            var netText = (typeof netTextRaw === 'string' && netTextRaw.match(/^\$[\d,]+\.\d{2}$/)) ? netTextRaw.replace(/\.\d{2}$/, '') : netTextRaw;
+            var tableStyle = 'border-collapse: collapse; border: 1px solid #d1d5db; border-radius: 0;';
+            var thStyle = 'background-color: #0f172a; color: white; font-weight: bold; text-align: left; padding: 12px 16px; border: 1px solid #d1d5db;';
+            var tdStyle = 'padding: 12px 16px; border: 1px solid #d1d5db; background-color: #f8fafc; color: #0f172a;';
+            var tdAlt = 'padding: 12px 16px; border: 1px solid #d1d5db; background-color: #f1f5f9; color: #0f172a;';
+            var roiHeaderOrange = 'padding: 12px 16px; border: 1px solid #d1d5db; background-color: #DE5A24; color: white; font-weight: bold; text-align: center;';
+            var impactValueCell = 'padding: 12px 16px; border: 1px solid #d1d5db; background-color: #f8fafc; color: #0f172a; font-weight: 900; text-align: center;';
+            var curNum = parseFloat(curCost);
+            var propNum = parseFloat(propCost);
+            var curDollar = (curCost !== '' && curCost != null && !isNaN(curNum)) ? ('$' + Math.round(curNum).toLocaleString()) : '—';
+            var propDollar = (propCost !== '' && propCost != null && !isNaN(propNum)) ? ('$' + Math.round(propNum).toLocaleString()) : '—';
+            var wrapperStyle = 'margin: 0 auto; width: 600px;';
+            var topTable = '<table style="' + tableStyle + '; width: 100%;"><thead><tr><th colspan="2" style="' + thStyle + '">Impact & ROI</th></tr></thead><tbody>' +
+                '<tr><td style="' + tdStyle + '"><strong>Current State</strong></td><td style="' + tdStyle + '">' + escapeHtml(cur || '—') + '</td></tr>' +
+                '<tr><td style="' + tdAlt + '"><strong>Proposed Solution</strong></td><td style="' + tdAlt + '">' + escapeHtml(prop || '—') + '</td></tr></tbody></table>';
+            var pricingRow = '<table style="' + tableStyle + '; width: 100%; margin-top: 16px;"><tbody><tr>' +
+                '<td style="' + roiHeaderOrange + '">Current Spend</td><td style="' + roiHeaderOrange + '">Proposed GPC Spend</td><td style="' + roiHeaderOrange + '">Net Impact</td></tr><tr>' +
+                '<td style="' + tdStyle + '; text-align: center; font-weight: 600;">' + escapeHtml(curDollar) + '</td>' +
+                '<td style="' + tdAlt + '; text-align: center; font-weight: 600;">' + escapeHtml(propDollar) + '</td>' +
+                '<td style="' + impactValueCell + '">' + escapeHtml(netText) + '</td></tr></tbody></table>';
+            var impactHtml = '<div style="' + wrapperStyle + '">' + topTable + pricingRow + '</div>';
+            const canvas = await captureInteriorPageGPC('Impact & ROI', impactHtml, { extraPaddingTop: 37 });
+            await addPageFromCanvas(canvas);
         }
         else if (slideFile === 'CUSTOM_REFERENCES') {
-            await buildReferencesZone();
-            const imgData = await captureZoneWithSnapdom('references-render-zone');
-            await stampImagePage(imgData, "References");
+            const refs = Array.from(document.querySelectorAll('.ref-block')).map(b => ({
+                name: b.querySelector('.ref-name').value, org: b.querySelector('.ref-org').value,
+                addr: b.querySelector('.ref-addr').value, phone: b.querySelector('.ref-phone').value, email: b.querySelector('.ref-email').value
+            })).filter(r => r.name || r.org);
+            let refsHtml = '';
+            refs.forEach(ref => {
+                refsHtml += '<div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 4px solid #DE5A24;"><div style="font-size: 1.25rem; font-weight: bold; color: #0f172a;">' + escapeHtml(ref.name) + '</div><div style="font-size: 1.1rem; font-weight: bold; color: #1e293b;">' + escapeHtml(ref.org) + '</div><div style="font-size: 1rem; color: #334155; margin-bottom: 0.5rem;">' + escapeHtml(ref.addr) + '</div><div style="font-size: 1rem; color: #334155;">' + escapeHtml(ref.phone) + ' &nbsp;|&nbsp; ' + escapeHtml(ref.email) + '</div></div>';
+            });
+            const canvas = await captureInteriorPageGPC('References', refsHtml || '<p style="color:#64748b;">No references added.</p>');
+            await addPageFromCanvas(canvas);
         }
         else if (slideFile === 'CUSTOM_PRICING') {
-            const fullWidth = 540;
-            const bottomMargin = 150;
-            const contentTop = 692;
-            let pricingPage;
-            const spawnPricingPage = async (isContinuation) => {
-                const page = await getBasePage();
-                const headerText = isContinuation ? "Proposed Pricing (Cont.)" : "Proposed Pricing";
-                page.drawText(headerText, { x: 44, y: 730, size: 28, font: boldFont, color: rgb(1, 1, 1) });
-                return page;
-            };
-            pricingPage = await spawnPricingPage(false);
             const locationBlocks = Array.from(document.querySelectorAll('.location-block'));
             const grandTotalText = document.getElementById('grand-total').innerText;
             const contractTerm = document.getElementById('contract-term').value || 'XX';
-            const hiddenTemplate = document.getElementById('hidden-pricing-template');
-            let currentY = contentTop;
-
-            for (let i = 0; i < locationBlocks.length; i++) {
-                const block = locationBlocks[i];
+            const MAX_ROWS_PER_PAGE = 14;
+            const borderClr = '#d1d5db';
+            const locHeaderOrange = '<div style="display: flex; background-color: #DE5A24; color: white; font-weight: bold; text-transform: uppercase; border: 1px solid ' + borderClr + '; border-bottom: none;"><div style="width: 380px; padding: 12px 16px; border-right: 1px solid ' + borderClr + ';">PRODUCT</div><div style="width: 140px; padding: 12px 5px; text-align: center; border-right: 1px solid ' + borderClr + ';">LIST PRICE</div><div style="width: 90px; padding: 12px 5px; text-align: center; border-right: 1px solid ' + borderClr + ';">QTY</div><div style="width: 140px; padding: 12px 16px; text-align: center;">TOTAL</div></div>';
+            const rowToHtml = (item, bg) => {
+                var priceVal = '$0';
+                if (item.price !== '' && !isNaN(parseFloat(item.price))) priceVal = '$' + Math.round(parseFloat(item.price)).toLocaleString();
+                var totalVal = (item.total && item.total.replace) ? item.total.replace(/\.\d{2}$/, '') : item.total || '$0';
+                if (totalVal.match(/^\$[\d,]+\.\d{2}$/)) totalVal = totalVal.replace(/\.\d{2}$/, '');
+                return '<div style="display: flex; background-color: ' + bg + '; border: 1px solid ' + borderClr + '; border-top: none;"><div style="width: 380px; padding: 12px 16px; border-right: 1px solid ' + borderClr + ';">' + escapeHtml(item.prod) + '</div><div style="width: 140px; padding: 12px 5px; border-right: 1px solid ' + borderClr + '; text-align: center;">' + priceVal + '</div><div style="width: 90px; padding: 12px 5px; border-right: 1px solid ' + borderClr + '; text-align: center;">' + escapeHtml(item.qty) + '</div><div style="width: 140px; padding: 12px 16px; text-align: center;">' + escapeHtml(totalVal) + '</div></div>';
+            };
+            let allRows = [];
+            locationBlocks.forEach((block, i) => {
                 const locName = (block.querySelector('.loc-name-input') && block.querySelector('.loc-name-input').value) || 'Location';
                 const rows = Array.from(block.querySelectorAll('.line-items-body tr')).map(tr => ({
                     prod: tr.querySelector('.prod-name') ? tr.querySelector('.prod-name').value : '',
@@ -829,82 +1092,69 @@
                     qty: tr.querySelector('.qty-input') ? tr.querySelector('.qty-input').value : '1',
                     total: tr.querySelector('.row-total') ? tr.querySelector('.row-total').textContent : '$0.00'
                 }));
-                const isLast = (i === locationBlocks.length - 1);
-
-                let html = `<div style="width: 750px; border: 2px solid #DE5A24; margin-bottom: 0; box-sizing: border-box;">
-                    <div style="display: flex; background-color: #DE5A24; color: white; font-weight: bold; text-transform: uppercase;">
-                        <div style="width: 380px; padding: 12px 16px; border-right: 1px solid #DE5A24;">PRODUCT</div>
-                        <div style="width: 140px; padding: 12px 5px; text-align: center; border-right: 1px solid #DE5A24;">LIST PRICE</div>
-                        <div style="width: 90px; padding: 12px 5px; text-align: center; border-right: 1px solid #DE5A24;">QTY</div>
-                        <div style="width: 140px; padding: 12px 16px; text-align: center;">TOTAL</div>
-                    </div>`;
                 if (locationBlocks.length > 1) {
-                    html += `<div style="display: flex; background-color: #A6A6A6; color: white; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #A6A6A6;"><div style="width: 100%; padding: 8px 16px;">${escapeHtml(locName)}</div></div>`;
+                    allRows.push({ type: 'loc', name: locName });
                 }
-                rows.forEach((item, index) => {
-                    const bgColor = (index % 2 === 0) ? '#E8E8E8' : '#ffffff';
-                    const priceVal = item.price !== '' ? `$${parseFloat(item.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '$0.00';
-                    html += `<div style="display: flex; background-color: ${bgColor}; border-bottom: 1px solid #DE5A24;"><div style="width: 380px; padding: 14px 16px; border-right: 1px solid #DE5A24; display: flex; align-items: center;">${escapeHtml(item.prod)}</div><div style="width: 140px; padding: 14px 5px; border-right: 1px solid #DE5A24; text-align: center; display: flex; align-items: center; justify-content: center;">${priceVal}</div><div style="width: 90px; padding: 14px 5px; border-right: 1px solid #DE5A24; text-align: center; display: flex; align-items: center; justify-content: center;">${escapeHtml(item.qty)}</div><div style="width: 140px; padding: 14px 16px; text-align: center; display: flex; align-items: center; justify-content: center;">${escapeHtml(item.total)}</div></div>`;
-                });
-                if (isLast && locationBlocks.length > 0) {
-                    html += `<div style="display: flex; background-color: #12243D; color: white; font-weight: bold; font-size: 1.1rem;"><div style="width: 610px; padding: 16px;">TOTAL MONTHLY COST</div><div style="width: 140px; padding: 16px; text-align: center;">${escapeHtml(grandTotalText)}</div></div>`;
-                }
-                html += '</div>';
-
-                hiddenTemplate.innerHTML = html;
-                hiddenTemplate.style.width = '750px';
-                renderZones.classList.remove('absolute', 'top-[-9999px]', 'left-[-9999px]');
-                await new Promise(r => requestAnimationFrame(r));
-                const captureResult = await snapdom(hiddenTemplate, { scale: 2, backgroundColor: 'transparent' });
-                const canvas = await captureResult.toCanvas();
-                renderZones.classList.add('absolute', 'top-[-9999px]', 'left-[-9999px]');
-
-                const pngImage = await finalDoc.embedPng(canvas.toDataURL('image/png'));
-                const ratio = pngImage.height / pngImage.width;
-                const drawHeight = fullWidth * ratio;
-
-                if (currentY - drawHeight < bottomMargin) {
-                    pricingPage = await spawnPricingPage(true);
-                    currentY = contentTop;
-                }
-
-                pricingPage.drawImage(pngImage, {
-                    x: 36,
-                    y: currentY - drawHeight,
-                    width: fullWidth,
-                    height: drawHeight
-                });
-                currentY -= (drawHeight + 25);
-            }
-
-            if (locationBlocks.length === 0) {
-                const totalOnlyHTML = `<div style="width: 750px; border: 2px solid #DE5A24;"><div style="display: flex; background-color: #12243D; color: white; font-weight: bold; font-size: 1.1rem;"><div style="width: 610px; padding: 16px;">TOTAL MONTHLY COST</div><div style="width: 140px; padding: 16px; text-align: center;">${escapeHtml(grandTotalText)}</div></div></div>`;
-                hiddenTemplate.innerHTML = totalOnlyHTML;
-                hiddenTemplate.style.width = '750px';
-                renderZones.classList.remove('absolute', 'top-[-9999px]', 'left-[-9999px]');
-                await new Promise(r => requestAnimationFrame(r));
-                const totalCapture = await snapdom(hiddenTemplate, { scale: 2, backgroundColor: 'transparent' });
-                const totalCanvas = await totalCapture.toCanvas();
-                renderZones.classList.add('absolute', 'top-[-9999px]', 'left-[-9999px]');
-                const totalPng = await finalDoc.embedPng(totalCanvas.toDataURL('image/png'));
-                const tRatio = totalPng.height / totalPng.width;
-                const tDrawHeight = fullWidth * tRatio;
-                if (currentY - tDrawHeight - 40 < bottomMargin) {
-                    pricingPage = await spawnPricingPage(true);
-                    currentY = contentTop;
-                }
-                pricingPage.drawImage(totalPng, { x: 36, y: currentY - tDrawHeight, width: fullWidth, height: tDrawHeight });
-                currentY -= (tDrawHeight + 25);
-            }
-
-            const termText = `Pricing based off ${contractTerm}-month term`;
-            pricingPage.drawText(termText, {
-                x: 36 + (fullWidth / 2) - (boldFont.widthOfTextAtSize(termText, 11) / 2),
-                y: currentY - 25,
-                size: 11,
-                font: boldFont,
-                color: rgb(0.3, 0.3, 0.3)
+                rows.forEach((item, idx) => { allRows.push({ type: 'row', item, bg: (idx % 2 === 0) ? '#E8E8E8' : '#f5f5f5' }); });
             });
+            var grandTotalNoDecimals = grandTotalText.replace(/\.(\d{2})$/, '') || grandTotalText;
+            const totalBlockHtml = '<div style="margin-top: 20px;">' + '<div style="display: flex; background-color: #12243D; color: white; font-weight: bold; font-size: 1.1rem; border: 1px solid ' + borderClr + '; border-radius: 0; box-sizing: border-box;"><div style="width: 610px; padding: 16px;">TOTAL MONTHLY COST</div><div style="width: 140px; padding: 16px; text-align: center;">' + escapeHtml(grandTotalNoDecimals) + '</div></div>' + '</div>';
+            const termLineHtml = '<p style="text-align: center; font-size: 11px; color: #475569; margin-top: 1rem;">Pricing based off ' + escapeHtml(contractTerm) + '-month term</p>';
+            if (allRows.length === 0) {
+                const html = totalBlockHtml + termLineHtml;
+                const canvas = await captureInteriorPageGPC('Proposed Pricing', html, { extraPaddingTop: 46 });
+                await addPageFromCanvas(canvas);
+            } else {
+                const MAX_ROWS_LAST_PAGE = 12;
+                const chunks = [];
+                let current = [];
+                let rowCount = 0;
+                for (let r = 0; r < allRows.length; r++) {
+                    const isLast = (r === allRows.length - 1);
+                    if (isLast && rowCount >= MAX_ROWS_LAST_PAGE) {
+                        chunks.push(current);
+                        current = [];
+                        rowCount = 0;
+                    }
+                    if (allRows[r].type === 'loc') {
+                        current.push({ type: 'loc', html: '<div style="display: flex; background-color: #A6A6A6; color: white; font-weight: bold; padding: 8px 16px; border: 1px solid ' + borderClr + '; border-top: none;">' + escapeHtml(allRows[r].name) + '</div>' });
+                        rowCount++;
+                    } else {
+                        current.push({ type: 'row', html: rowToHtml(allRows[r].item, allRows[r].bg) });
+                        rowCount++;
+                    }
+                    if (rowCount >= MAX_ROWS_PER_PAGE && !isLast) {
+                        chunks.push(current);
+                        current = [];
+                        rowCount = 0;
+                    }
+                }
+                if (current.length) chunks.push(current);
+                for (let p = 0; p < chunks.length; p++) {
+                    const isLast = (p === chunks.length - 1);
+                    let body = '';
+                    let firstInChunk = true;
+                    for (const item of chunks[p]) {
+                        if (item.type === 'loc') {
+                            if (!firstInChunk) body += '</div>';
+                            body += '<div style="margin-top: ' + (firstInChunk ? 0 : 16) + 'px; width: 100%; max-width: 750px; box-sizing: border-box; border: 1px solid ' + borderClr + ';">';
+                            if (firstInChunk) { body += locHeaderOrange; firstInChunk = false; }
+                            body += item.html;
+                        } else {
+                            if (firstInChunk) {
+                                body += '<div style="margin-top: 0; width: 100%; max-width: 750px; box-sizing: border-box; border: 1px solid ' + borderClr + ';">' + locHeaderOrange;
+                                firstInChunk = false;
+                            }
+                            body += item.html;
+                        }
+                    }
+                    body += '</div>';
+                    if (isLast) body += totalBlockHtml + termLineHtml;
+                    const headerTitle = p === 0 ? 'Proposed Pricing' : 'Proposed Pricing (Cont.)';
+                    const canvas = await captureInteriorPageGPC(headerTitle, body, { extraPaddingTop: 46 });
+                    await addPageFromCanvas(canvas);
+                }
+            }
         }
         else if (slideFile === 'CUSTOM_PDF') { await appendUploadedPdf(payload.customPdfFile); }
         else if (slideFile === 'USAC_RFP') { await appendUploadedPdf(payload.usacFile); }
@@ -914,29 +1164,6 @@
                 const existingPdf = await PDFDocument.load(existingPdfBytes);
                 const [page] = await finalDoc.copyPages(existingPdf, [0]);
 
-// --- DATA INJECTION FOR TITLE PAGE (v1.6 - Left Aligned @ 280x) ---
-if (slideFile === '01_Title_Page.pdf') {
-    const rfpText = (document.getElementById('global-rfp').value || "").substring(0, 33);
-    const bizText = (document.getElementById('global-biz').value || "").substring(0, 33);
-    const repText = (document.getElementById('global-rep').value || "").substring(0, 33);
-    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-    page.drawText(bizText, { 
-        x: 285, y: 120, size: 26, font: boldFont, color: rgb(1, 1, 1) 
-    });
-
-    page.drawText(rfpText, { 
-        x: 285, y: 90, size: 18, font: boldFont, color: rgb(1, 1, 1) 
-    });
-
-    page.drawText(`Presented by: ${repText}`, { 
-        x: 285, y: 65, size: 12, font: font, color: rgb(1, 1, 1) 
-    });
-
-    page.drawText(today, { 
-        x: 285, y: 45, size: 10, font: font, color: rgb(1, 1, 1) 
-    });
-}
 // --- DATA INJECTION FOR PROJECT PLAN ---
 if (slideFile === '09_Project.pdf') {
     // Pull the text from the new sidebar inputs
