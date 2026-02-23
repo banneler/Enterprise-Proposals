@@ -1224,6 +1224,11 @@
                         rowCount = 0;
                     }
                     if (allRows[r].type === 'loc') {
+                        if (rowCount > 0 && rowCount + 1 >= MAX_ROWS_PER_PAGE) {
+                            chunks.push(current);
+                            current = [];
+                            rowCount = 0;
+                        }
                         current.push({ type: 'loc', html: '<div style="display: flex; background-color: #A6A6A6; color: white; font-weight: bold; padding: 8px 16px; border: 1px solid ' + borderClr + '; border-top: none;">' + escapeHtml(allRows[r].name) + '</div>' });
                         rowCount++;
                     } else {
