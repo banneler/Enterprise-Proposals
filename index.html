@@ -425,6 +425,7 @@
         const ASSETS_BASE = new URL('Proposal_Assets/', window.location.href).href;
         const GPC_TITLE_BG = ASSETS_BASE + '01_Title_Page.svg';
         const GPC_INTERIOR_BG = ASSETS_BASE + 'GPC_Blank_Letterhead.svg';
+        const REFERENCES_CONTENT_MAX_WIDTH_PX = 380;
 
         function showToast(message, type) {
             type = type === 'error' ? 'error' : 'success';
@@ -1000,7 +1001,7 @@
         titleText.textContent = (headerTitle && headerTitle.trim()) ? headerTitle : '\u00A0';
         card.appendChild(titleText);
         const contentArea = document.createElement('div');
-        const contentTop = 100;
+        const contentTop = 128;
         const baseFontSize = fontSize || '11pt';
         contentArea.style.cssText = 'position: absolute; left: 72px; right: 72px; top: ' + contentTop + 'px; bottom: 72px; overflow: hidden; font-size: ' + baseFontSize + '; line-height: 1.4;' + (extraPaddingTop ? ' padding-top: ' + extraPaddingTop + 'px;' : '') + (fontFamily ? ' font-family: ' + fontFamily + ';' : '');
         contentArea.innerHTML = fontWeight ? ('<div style="font-weight: ' + fontWeight + ';">' + contentHtml + '</div>') : contentHtml;
@@ -1171,7 +1172,8 @@
             refs.forEach(ref => {
                 refsHtml += '<div style="margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid #DE5A24;"><div style="font-size: 1.5rem; font-weight: bold; color: #0f172a;">' + escapeHtml(ref.name) + '</div><div style="font-size: 1.3rem; font-weight: bold; color: #1e293b;">' + escapeHtml(ref.org) + '</div><div style="font-size: 1.1rem; color: #334155; margin-bottom: 0.75rem;">' + escapeHtml(ref.addr) + '</div><div style="font-size: 1.1rem; color: #334155;">' + escapeHtml(ref.phone) + ' &nbsp;|&nbsp; ' + escapeHtml(ref.email) + '</div></div>';
             });
-            const canvas = await captureInteriorPageGPC('References', refsHtml || '<p style="color:#64748b;">No references added.</p>', { extraPaddingTop: 52 });
+            const refsWrapped = '<div style="max-width: ' + REFERENCES_CONTENT_MAX_WIDTH_PX + 'px; margin: 0 auto;">' + (refsHtml || '<p style="color:#64748b;">No references added.</p>') + '</div>';
+            const canvas = await captureInteriorPageGPC('References', refsWrapped, { extraPaddingTop: 52 });
             await addPageFromCanvas(canvas);
         }
         else if (slideFile === 'CUSTOM_PRICING') {
