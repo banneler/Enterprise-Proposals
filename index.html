@@ -1161,9 +1161,9 @@
             })).filter(r => r.name || r.org);
             let refsHtml = '';
             refs.forEach(ref => {
-                refsHtml += '<div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 4px solid #DE5A24;"><div style="font-size: 1.25rem; font-weight: bold; color: #0f172a;">' + escapeHtml(ref.name) + '</div><div style="font-size: 1.1rem; font-weight: bold; color: #1e293b;">' + escapeHtml(ref.org) + '</div><div style="font-size: 1rem; color: #334155; margin-bottom: 0.5rem;">' + escapeHtml(ref.addr) + '</div><div style="font-size: 1rem; color: #334155;">' + escapeHtml(ref.phone) + ' &nbsp;|&nbsp; ' + escapeHtml(ref.email) + '</div></div>';
+                refsHtml += '<div style="margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 2px solid #DE5A24;"><div style="font-size: 1.5rem; font-weight: bold; color: #0f172a;">' + escapeHtml(ref.name) + '</div><div style="font-size: 1.3rem; font-weight: bold; color: #1e293b;">' + escapeHtml(ref.org) + '</div><div style="font-size: 1.1rem; color: #334155; margin-bottom: 0.75rem;">' + escapeHtml(ref.addr) + '</div><div style="font-size: 1.1rem; color: #334155;">' + escapeHtml(ref.phone) + ' &nbsp;|&nbsp; ' + escapeHtml(ref.email) + '</div></div>';
             });
-            const canvas = await captureInteriorPageGPC('References', refsHtml || '<p style="color:#64748b;">No references added.</p>', { extraPaddingTop: 28 });
+            const canvas = await captureInteriorPageGPC('References', refsHtml || '<p style="color:#64748b;">No references added.</p>', { extraPaddingTop: 52 });
             await addPageFromCanvas(canvas);
         }
         else if (slideFile === 'CUSTOM_PRICING') {
