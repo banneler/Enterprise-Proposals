@@ -768,6 +768,14 @@
             URL.revokeObjectURL(a.href);
         }
 
+        function normalizeLegacyQuillText(s) {
+            if (s == null || typeof s !== 'string') return '';
+            var t = s.trim();
+            if (t === '' || t === '<p><br></p>' || t === '<p></p>' || /^<p>\s*<\/p>$/i.test(t)) return '';
+            if (/<[a-z][\s\S]*>/i.test(t)) return t.replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>\s*<p>/gi, '\n\n').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').trim();
+            return t;
+        }
+
         function loadProject(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -782,9 +790,9 @@
                     if (data.globalStart != null) document.getElementById('global-start').value = data.globalStart;
                     if (data.globalEnd != null) document.getElementById('global-end').value = data.globalEnd;
                     if (data.coverTitle != null) document.getElementById('cover-title-input').value = data.coverTitle;
-                    if (data.coverText != null) document.getElementById('cover-body').value = data.coverText;
+                    if (data.coverText != null) document.getElementById('cover-body').value = normalizeLegacyQuillText(data.coverText);
                     if (data.customTextTitle != null) document.getElementById('custom-text-title-input').value = data.customTextTitle;
-                    if (data.customText != null) document.getElementById('custom-text-body').value = data.customText;
+                    if (data.customText != null) document.getElementById('custom-text-body').value = normalizeLegacyQuillText(data.customText);
                     if (data.contractTerm != null) document.getElementById('contract-term').value = data.contractTerm;
                     if (data.references && data.references.length) {
                         const refBlocks = document.querySelectorAll('.ref-block');
