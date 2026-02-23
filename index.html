@@ -988,7 +988,7 @@
         card.className = 'gpc-pdf-font';
         card.style.cssText = 'width: 8.5in; height: 11in; position: relative; box-sizing: border-box; background: url("' + GPC_INTERIOR_BG + '") no-repeat 0 0; background-size: 100% 100%;';
         const titleText = document.createElement('div');
-        titleText.style.cssText = 'position: absolute; left: 72px; top: 0.5in; color: white; font-size: 30px; font-weight: bold;';
+        titleText.style.cssText = 'position: absolute; left: 72px; top: 0.5in; color: white; font-size: 32px; font-weight: bold;';
         titleText.textContent = (headerTitle && headerTitle.trim()) ? headerTitle : '\u00A0';
         card.appendChild(titleText);
         const contentArea = document.createElement('div');
@@ -1045,7 +1045,7 @@
             page.drawText(headerText, { 
                 x: 44,      
                 y: 730,
-                size: 30,   // interior page header: 2pt up from 28
+                size: 32,   // interior page header title
                 font: boldFont, 
                 color: rgb(1, 1, 1) // Pure White
             });
@@ -1163,7 +1163,7 @@
             refs.forEach(ref => {
                 refsHtml += '<div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 4px solid #DE5A24;"><div style="font-size: 1.25rem; font-weight: bold; color: #0f172a;">' + escapeHtml(ref.name) + '</div><div style="font-size: 1.1rem; font-weight: bold; color: #1e293b;">' + escapeHtml(ref.org) + '</div><div style="font-size: 1rem; color: #334155; margin-bottom: 0.5rem;">' + escapeHtml(ref.addr) + '</div><div style="font-size: 1rem; color: #334155;">' + escapeHtml(ref.phone) + ' &nbsp;|&nbsp; ' + escapeHtml(ref.email) + '</div></div>';
             });
-            const canvas = await captureInteriorPageGPC('References', refsHtml || '<p style="color:#64748b;">No references added.</p>');
+            const canvas = await captureInteriorPageGPC('References', refsHtml || '<p style="color:#64748b;">No references added.</p>', { extraPaddingTop: 28 });
             await addPageFromCanvas(canvas);
         }
         else if (slideFile === 'CUSTOM_PRICING') {
