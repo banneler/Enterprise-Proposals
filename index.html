@@ -50,15 +50,22 @@
                 <h1 class="text-xl font-bold tracking-wide border-l border-slate-700 pl-4 flex-shrink-0">Self-Serve Proposal Generator</h1>
                 <p id="header-unsaved-msg" class="hidden text-sm font-medium text-slate-900/90 ml-2 truncate">Unsaved changes</p>
             </div>
-            <button id="generate-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded shadow-lg transition flex-shrink-0">Generate Proposal PDF</button>
+            <button id="generate-btn" data-state="initial" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded shadow-lg transition flex-shrink-0 disabled:opacity-70 disabled:cursor-not-allowed">Compile Proposal</button>
         </header>
 
         <div class="flex-1 flex overflow-hidden">
             
             <div class="w-96 flex-shrink-0 bg-white border-r border-slate-200 overflow-y-auto p-6 shadow-inner flex flex-col">
                 <div class="flex gap-2 mb-6 border-b border-slate-100 pb-6">
-                    <button type="button" id="save-project-btn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-3 rounded-lg shadow-sm transition text-sm">Save (.spec)</button>
-                    <label class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3 rounded-lg border border-slate-300 shadow-sm transition cursor-pointer text-center text-sm"><input type="file" id="load-project-input" accept=".spec" class="hidden">Load Project</label>
+                    <button type="button" id="save-project-btn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-3 rounded-lg shadow-sm transition text-sm flex justify-center items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                        Save (.spec)
+                    </button>
+                    <label class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3 rounded-lg border border-slate-300 shadow-sm transition cursor-pointer flex justify-center items-center gap-2 text-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                        Load Project
+                        <input type="file" id="load-project-input" accept=".spec" class="hidden">
+                    </label>
                 </div>
                 <h2 class="text-lg font-bold mb-4 border-b border-slate-100 pb-2 text-slate-800">1. Proposal Properties</h2>
                 <div class="space-y-4 mb-8">
@@ -74,7 +81,7 @@
 <ul id="module-list" class="space-y-2 flex-1 overflow-y-auto pb-4">
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="01_Title_Page.pdf">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" checked class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Title Page</span>
         <button onclick="previewStockPdf('01_Title_Page.pdf', 'Title Page')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
@@ -83,25 +90,25 @@
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_COVER">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" checked id="toggle-cover-letter" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Cover Letter</span>
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_TEXT">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" id="toggle-custom-text" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Custom Page</span>
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_IMPACT">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" id="toggle-impact-roi" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Impact & ROI</span>
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="02_Why_GPC.pdf">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" checked class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Why GPC?</span>
         <button onclick="previewStockPdf('02_Why_GPC.pdf', 'Why GPC?')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
@@ -110,7 +117,7 @@
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="03_About_GPC.pdf">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" checked class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">About GPC</span>
         <button onclick="previewStockPdf('03_About_GPC.pdf', 'About GPC')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
@@ -119,19 +126,19 @@
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_REFERENCES">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" checked id="toggle-references" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">References</span>
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_PRICING">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" checked id="toggle-pricing" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Proposed Pricing</span>
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="04_NOC_Monitoring.pdf">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">24-Hour NOC Monitoring</span>
         <button onclick="previewStockPdf('04_NOC_Monitoring.pdf', '24-Hour NOC Monitoring')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
@@ -140,7 +147,7 @@
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="05_DIA.pdf">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Dedicated Internet Access (DIA)</span>
         <button onclick="previewStockPdf('05_DIA.pdf', 'Dedicated Internet Access (DIA)')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
@@ -149,7 +156,7 @@
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="06_SIA.pdf">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Standard Internet Access (SIA)</span>
         <button onclick="previewStockPdf('06_SIA.pdf', 'Standard Internet Access (SIA)')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
@@ -158,7 +165,7 @@
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="07_CaseStudy.pdf">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Boys Town Case Study</span>
         <button onclick="previewStockPdf('07_CaseStudy.pdf', 'Boys Town Case Study')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
@@ -167,7 +174,7 @@
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="08_SPIN.pdf">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">SPIN ID Number</span>
         <button onclick="previewStockPdf('08_SPIN.pdf', 'SPIN ID Number')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
@@ -176,7 +183,7 @@
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="09_Project.pdf">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Project Implementation Plan</span>
         <button onclick="previewStockPdf('09_Project.pdf', 'Project Implementation Plan')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
@@ -185,7 +192,7 @@
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="10_Leadership.pdf">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Senior Leadership</span>
         <button onclick="previewStockPdf('10_Leadership.pdf', 'Senior Leadership')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
@@ -194,7 +201,7 @@
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="11_Escalation.pdf">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Escalation Process</span>
         <button onclick="previewStockPdf('11_Escalation.pdf', 'Escalation Process')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
@@ -203,13 +210,13 @@
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-slate-400" data-filename="CUSTOM_PDF">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" id="toggle-custom-pdf" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">Upload Custom PDF</span>
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-slate-400" data-filename="USAC_RFP">
-        <span class="mr-3 text-slate-400 handle group-hover:text-orange-500">☰</span>
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" id="toggle-usac" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">USAC Original RFP</span>
     </li>
@@ -221,7 +228,8 @@
                 <div class="w-full max-w-[1680px] mx-auto space-y-8">
                     
                     <div id="cover-letter-section" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
-                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2">
+                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2">
+                            <svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                             <h3 class="text-2xl font-bold text-slate-800">Cover Letter</h3>
                         </div>
                         <input type="text" id="cover-title-input" class="w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-orange-500 font-semibold text-slate-700" placeholder="Document Title (Leave blank for cover pages)">
@@ -257,7 +265,8 @@
                     </div>
 
                     <div id="custom-text-section" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
-                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2">
+                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2">
+                            <svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                             <h3 class="text-2xl font-bold text-slate-800">Custom Page</h3>
                         </div>
                         <input type="text" id="custom-text-title-input" class="w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-orange-500 font-semibold text-slate-700" placeholder="Document Title (Leave blank for no header)">
@@ -266,12 +275,19 @@
                                 <div id="quill-custom-text" class="h-64 bg-white"></div>
                                 <p id="warning-customText" class="hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten.</p>
                             </div>
-                            <div class="w-[300px] flex-shrink-0 flex flex-col gap-4"></div>
+                            <div class="w-[280px] flex-shrink-0 rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600 flex flex-col gap-4">
+                                <div>
+                                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3>
+                                    <p class="text-xs text-slate-400 mb-2">Inserts at cursor in the custom page.</p>
+                                    <div id="custom-page-snippets" class="space-y-2 overflow-auto min-h-0"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div id="custom-pdf-section" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
-                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2">
+                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2">
+                            <svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
                             <h3 class="text-2xl font-bold text-slate-800">Upload Custom PDF (Exec Summary, etc.)</h3>
                         </div>
                         <input type="file" id="custom-pdf-upload" class="hidden" accept="application/pdf">
@@ -282,7 +298,8 @@
                     </div>
 
                     <div id="references-section" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
-                        <div class="flex items-center mb-6 border-b border-slate-100 pb-2">
+                        <div class="flex items-center mb-6 border-b border-slate-100 pb-2 gap-2">
+                            <svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                             <h3 class="text-2xl font-bold text-slate-800">References</h3>
                         </div>
                         <div class="grid grid-cols-2 gap-6" id="references-container">
@@ -291,7 +308,10 @@
 
                     <div id="pricing-section" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300 flex flex-col">
                         <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-2">
-                            <h3 class="text-2xl font-bold text-slate-800">Dynamic Pricing Engine</h3>
+                            <h3 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                                <svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Dynamic Pricing Engine
+                            </h3>
                             <button id="add-location-btn" class="bg-slate-800 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm hover:bg-slate-900 transition">+ Add Location</button>
                         </div>
                         <div class="mb-6 w-1/3 min-w-[200px]">
@@ -306,7 +326,8 @@
                     </div>
 
                     <div id="impact-roi-section" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
-                        <div class="flex items-center mb-6 border-b border-slate-100 pb-2">
+                        <div class="flex items-center mb-6 border-b border-slate-100 pb-2 gap-2">
+                            <svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                             <h3 class="text-2xl font-bold text-slate-800">Impact & ROI</h3>
                         </div>
                         <div class="grid grid-cols-2 gap-6 mb-6">
@@ -360,6 +381,7 @@
 
     <div id="loading-overlay" class="hidden fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-md">
         <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl px-12 py-10 flex flex-col items-center">
+            <img src="Proposal_Assets/GPC-White-1-1.webp" alt="" class="h-16 mb-4 object-contain">
             <div class="animate-spin rounded-full h-20 w-20 border-b-4 mb-6 border-orange-500"></div>
             <p class="text-xl font-bold tracking-widest animate-pulse text-white">Assembling Proposal...</p>
         </div>
@@ -483,6 +505,13 @@
             { label: 'Business Internet', text: 'Reliable, high-performance dedicated business internet from 10 Mbps to 400 Gbps.' },
             { label: 'Managed Ethernet', text: 'Scalable, secure transport across multiple locations, delivering cost savings and efficiency.' }
         ];
+        const GPC_CUSTOM_PAGE_SNIPPETS = [
+            { label: 'Executive Summary', text: 'This proposal outlines a comprehensive solution designed to meet your organization\'s requirements. Our approach combines proven technology with dedicated support to deliver measurable outcomes.' },
+            { label: 'Technical Description', text: 'The proposed solution leverages industry-standard architecture with redundancy and scalability. Key technical components include managed connectivity, monitoring, and documented processes for implementation and support.' },
+            { label: 'Scope of Work', text: 'Scope includes design, implementation, testing, and documentation. All work will be performed per approved project plan and change control. Handoff and training are included.' },
+            { label: 'Key Deliverables', text: 'Deliverables include: as-built documentation, circuit details, contact information, and a formal project sign-off. Ongoing support terms are defined in the master agreement.' },
+            { label: 'Implementation Approach', text: 'Implementation will follow a phased approach with a kickoff meeting, site readiness review, installation and testing, and final acceptance. Timeline will be confirmed upon order.' }
+        ];
         function insertIntoQuillCover(text) {
             const sel = quillCover.getSelection(true);
             const index = sel ? sel.index : Math.max(0, quillCover.getLength() - 1);
@@ -503,7 +532,28 @@
                 container.appendChild(btn);
             });
         }
+        function insertIntoQuillCustomText(text) {
+            const sel = quillCustomText.getSelection(true);
+            const index = sel ? sel.index : Math.max(0, quillCustomText.getLength() - 1);
+            quillCustomText.insertText(index, text, 'user');
+            quillCustomText.setSelection(index + text.length);
+        }
+        function renderCustomPageSnippets() {
+            const container = document.getElementById('custom-page-snippets');
+            if (!container) return;
+            container.innerHTML = '';
+            GPC_CUSTOM_PAGE_SNIPPETS.forEach(function(s) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'w-full text-left px-3 py-2 rounded-lg border border-slate-200 bg-white hover:border-orange-500 hover:bg-orange-50/80 text-slate-700 text-[11px] leading-tight transition shadow-sm';
+                btn.textContent = s.label;
+                btn.title = s.text.slice(0, 80) + (s.text.length > 80 ? '…' : '');
+                btn.addEventListener('click', function() { insertIntoQuillCustomText(s.text); });
+                container.appendChild(btn);
+            });
+        }
         renderCoverSnippets();
+        renderCustomPageSnippets();
 
         // --- UI Visibility Toggles based on Slide Selection ---
         function toggleSection(checkboxId, sectionId) {
@@ -818,34 +868,83 @@
             if (dlBtn) dlBtn.classList.add('hidden');
         }
 
-        // --- Final PDF Assembly Engine ---
-        document.getElementById('generate-btn').addEventListener('click', async () => {
-            
+        // --- Two-stage PDF: Compile = hidden first run, Generate = show preview (same flow as JenniB/Tenworks) ---
+        let pdfGenerateState = 'initial';
+
+        function setGenerateButtonState(state) {
+            pdfGenerateState = state;
+            const btn = document.getElementById('generate-btn');
+            if (!btn) return;
+            btn.setAttribute('data-state', state);
+            btn.classList.remove('animate-pulse', 'bg-orange-500', 'bg-orange-600', 'bg-slate-700');
+            if (state === 'initial') {
+                btn.textContent = 'Compile Proposal';
+                btn.classList.add('bg-orange-500', 'hover:bg-orange-600');
+                btn.disabled = false;
+            } else if (state === 'compiling') {
+                btn.textContent = 'Compiling…';
+                btn.classList.add('bg-slate-700', 'animate-pulse');
+                btn.disabled = true;
+            } else {
+                btn.textContent = 'Generate PDF';
+                btn.classList.add('bg-orange-500', 'hover:bg-orange-600');
+                btn.disabled = false;
+            }
+        }
+
+        function getPayload() {
             const activeSlides = [];
             document.querySelectorAll('#module-list li').forEach(li => {
-                if(li.querySelector('.slide-toggle').checked) activeSlides.push(li.getAttribute('data-filename'));
+                if (li.querySelector('.slide-toggle').checked) activeSlides.push(li.getAttribute('data-filename'));
             });
-
             const customPdfFile = document.getElementById('custom-pdf-upload').files[0];
-            if (activeSlides.includes('CUSTOM_PDF') && !customPdfFile) { alert("Please select a file for the Custom PDF Upload."); return; }
-            
+            if (activeSlides.includes('CUSTOM_PDF') && !customPdfFile) { alert("Please select a file for the Custom PDF Upload."); return null; }
             const usacFile = document.getElementById('usac-upload').files[0];
-            if (activeSlides.includes('USAC_RFP') && !usacFile) { alert("Please select a file for the USAC RFP Upload."); return; }
-
-            const payload = {
+            if (activeSlides.includes('USAC_RFP') && !usacFile) { alert("Please select a file for the USAC RFP Upload."); return null; }
+            return {
                 globals: { biz: document.getElementById('global-biz').value },
                 slides: activeSlides,
                 customPdfFile: customPdfFile,
                 usacFile: usacFile
             };
+        }
 
-            document.getElementById('loading-overlay').classList.remove('hidden');
-            try { await generatePDFDocument(payload); } 
-            catch (error) { console.error(error); showToast('Error generating PDF. Check console.', 'error'); } 
-            finally { document.getElementById('loading-overlay').classList.add('hidden'); }
+        async function compileAssets(payload) {
+            setGenerateButtonState('compiling');
+            try {
+                await generatePDFDocument(payload, false);
+            } catch (err) {
+                console.error('Compile failed:', err);
+                setGenerateButtonState('initial');
+                showToast('Compile failed. Check console.', 'error');
+            }
+        }
+
+        document.getElementById('generate-btn').addEventListener('click', async () => {
+            const payload = getPayload();
+            if (!payload) return;
+            if (pdfGenerateState === 'initial') {
+                await compileAssets(payload);
+            } else if (pdfGenerateState === 'ready') {
+                try {
+                    await generatePDFDocument(payload, true);
+                } catch (error) {
+                    console.error(error);
+                    showToast('Error generating PDF. Check console.', 'error');
+                }
+            }
         });
 
-    async function generatePDFDocument(payload) {
+    async function generatePDFDocument(payload, showPreview) {
+    if (showPreview && pdfGenerateState !== 'ready') return;
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay && showPreview) overlay.classList.remove('hidden');
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+
+    try {
     const { PDFDocument, rgb, StandardFonts } = PDFLib;
     const finalDoc = await PDFDocument.create();
     
@@ -1210,19 +1309,35 @@ if (slideFile === '09_Project.pdf') {
     const pdfBytes = await finalDoc.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
-    document.getElementById('pdf-preview-title').innerText = 'Generated Proposal Preview';
-    document.getElementById('pdf-preview-iframe').src = url + '#toolbar=0&navpanes=0&view=FitH';
-    document.getElementById('pdf-preview-modal').classList.remove('hidden');
-    const downloadBtn = document.getElementById('modal-download-btn');
-    downloadBtn.classList.remove('hidden');
-    downloadBtn.onclick = () => {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${(payload.globals.biz || 'GPC').replace(/ /g, '_')}_Proposal.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    };
+
+    if (showPreview) {
+        document.getElementById('pdf-preview-title').innerText = 'Generated Proposal Preview';
+        document.getElementById('pdf-preview-iframe').src = url + '#toolbar=0&navpanes=0&view=FitH';
+        document.getElementById('pdf-preview-modal').classList.remove('hidden');
+        const downloadBtn = document.getElementById('modal-download-btn');
+        if (downloadBtn) {
+            downloadBtn.classList.remove('hidden');
+            downloadBtn.onclick = () => {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${(payload.globals.biz || 'GPC').replace(/ /g, '_')}_Proposal.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            };
+        }
+        setGenerateButtonState('initial');
+    } else {
+        URL.revokeObjectURL(url);
+        setGenerateButtonState('ready');
+    }
+    } catch (err) {
+        throw err;
+    } finally {
+        document.documentElement.style.overflow = prevHtmlOverflow || '';
+        document.body.style.overflow = prevBodyOverflow || '';
+        if (overlay) overlay.classList.add('hidden');
+    }
 }
 
         // --- Dirty Data Check before leaving page ---
