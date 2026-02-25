@@ -8,6 +8,7 @@
 		}
 	],
 	"settings": {
-		"liveServer.settings.multiRootWorkspaceName": "Enterprise-Proposals"
+		"liveServer.settings.multiRootWorkspaceName": "Enterprise-Proposals",
+		"liveServer.settings.port": 5501
 	}
 }
