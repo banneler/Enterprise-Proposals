@@ -50,8 +50,8 @@
 
         <div class="flex-1 flex overflow-hidden">
             
-            <div class="w-96 flex-shrink-0 bg-white border-r border-slate-200 overflow-y-auto p-6 shadow-inner flex flex-col">
-                <div class="flex gap-2 mb-6 border-b border-slate-100 pb-6">
+            <div class="w-96 flex-shrink-0 bg-white border-r border-slate-200 shadow-inner flex flex-col min-h-0">
+                <div class="flex gap-2 border-b border-slate-100 p-6 pb-4 flex-shrink-0">
                     <button type="button" id="save-project-btn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-3 rounded-lg shadow-sm transition text-sm flex justify-center items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                         Save (.spec)
@@ -62,6 +62,7 @@
                         <input type="file" id="load-project-input" accept=".spec" class="hidden">
                     </label>
                 </div>
+                <div class="flex-1 min-h-0 overflow-y-auto p-6 pt-4">
                 <h2 class="text-lg font-bold mb-4 border-b border-slate-100 pb-2 text-slate-800">1. Proposal Properties</h2>
                 <div class="space-y-4 mb-8">
                     <div><label class="block text-sm font-semibold text-slate-700">RFP Name / Proposal Name</label><input type="text" id="global-rfp" maxlength="33" class="w-full border border-slate-300 p-2 rounded mt-1 bg-slate-50 focus:bg-white outline-none focus:border-orange-500"></div>
@@ -72,8 +73,9 @@
 </div>
                </div>
 
-                <h2 class="text-lg font-bold mb-4 border-b border-slate-100 pb-2 text-slate-800">2. Proposal Elements (Drag to Reorder)</h2>
-<ul id="module-list" class="space-y-2 flex-1 overflow-y-auto pb-4">
+                <h2 class="text-lg font-bold mb-1 text-slate-800">2. Proposal Elements</h2>
+                <p class="text-xs text-slate-500 mb-4 border-b border-slate-100 pb-2">Drag to reorder</p>
+<ul id="module-list" class="space-y-2 pb-4">
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="01_Title_Page.pdf">
         <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
@@ -217,6 +219,7 @@
     </li>
     
 </ul>
+                </div>
             </div>
 
             <div class="flex-1 bg-slate-100 p-5 overflow-y-auto" id="scroll-container">
@@ -1303,8 +1306,8 @@ if (slideFile === '09_Project.pdf') {
     const fontSize = 12; // Tweak this if it needs to match the stock font size better
 
     // 1. Your exact center X and baseline Y coordinates
-    const startCenterX = 207;
-    const endCenterX = 406;   
+    const startCenterX = 209;
+    const endCenterX = 399;   
     const yCoord = 537;       
 
     // 2. Measure the text width dynamically
