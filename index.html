@@ -1153,7 +1153,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             continue;
         }
         if (slideFile === 'TOC') {
-            const tocEntries = payload.slides.filter(f => f !== 'TOC').map((filename, idx) => {
+            const tocEntries = payload.slides.filter(f => f !== 'TOC' && f !== '01_Title_Page.pdf').map((filename, idx) => {
                 const li = document.querySelector(`#module-list li[data-filename="${filename}"]`);
                 const label = (li && li.querySelector('span.flex-1')) ? (li.querySelector('span.flex-1').textContent || '').trim() : filename;
                 return { num: idx + 1, label: label || filename };
