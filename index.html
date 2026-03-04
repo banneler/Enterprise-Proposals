@@ -92,6 +92,12 @@
         <span class="flex-1 font-medium text-sm text-slate-700">Cover Letter</span>
     </li>
     
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="TOC">
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
+        <input type="checkbox" checked id="toggle-toc" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
+        <span class="flex-1 font-medium text-sm text-slate-700">Table of Contents</span>
+    </li>
+    
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_TEXT">
         <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" id="toggle-custom-text" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
@@ -1143,6 +1149,17 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             const displayTitle = document.getElementById('cover-title-input').value || '';
             const bodyHtml = textToHtml(document.getElementById('cover-body').value);
             const canvas = await captureInteriorPageGPC(displayTitle, bodyHtml, { extraPaddingTop: 46 });
+            await addPageFromCanvas(canvas);
+            continue;
+        }
+        if (slideFile === 'TOC') {
+            const tocEntries = payload.slides.filter(f => f !== 'TOC').map((filename, idx) => {
+                const li = document.querySelector(`#module-list li[data-filename="${filename}"]`);
+                const label = (li && li.querySelector('span.flex-1')) ? (li.querySelector('span.flex-1').textContent || '').trim() : filename;
+                return { num: idx + 1, label: label || filename };
+            });
+            const tocBodyHtml = tocEntries.length ? tocEntries.map(e => '<p style="margin-bottom: 0.6rem;">' + e.num + '. ' + escapeHtml(e.label) + '</p>').join('') : '<p style="color:#64748b;">No sections in this proposal.</p>';
+            const canvas = await captureInteriorPageGPC('Table of Contents', tocBodyHtml, { extraPaddingTop: 46 });
             await addPageFromCanvas(canvas);
             continue;
         }
