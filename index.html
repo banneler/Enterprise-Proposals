@@ -51,16 +51,22 @@
         <div class="flex-1 flex overflow-hidden">
             
             <div class="w-96 flex-shrink-0 bg-white border-r border-slate-200 shadow-inner flex flex-col min-h-0">
-                <div class="flex gap-2 border-b border-slate-100 p-6 pb-4 flex-shrink-0">
-                    <button type="button" id="save-project-btn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-3 rounded-lg shadow-sm transition text-sm flex justify-center items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                        Save (.spec)
+                <div class="border-b border-slate-100 p-6 pb-4 flex-shrink-0 space-y-3">
+                    <div class="flex gap-2">
+                        <button type="button" id="save-project-btn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-3 rounded-lg shadow-sm transition text-sm flex justify-center items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                            Save (.spec)
+                        </button>
+                        <label class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3 rounded-lg border border-slate-300 shadow-sm transition cursor-pointer flex justify-center items-center gap-2 text-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                            Load Project
+                            <input type="file" id="load-project-input" accept=".spec" class="hidden">
+                        </label>
+                    </div>
+                    <button type="button" id="send-for-proofing-btn" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2 px-3 rounded-lg border border-slate-300 shadow-sm transition text-sm flex justify-center items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        Send for Proofing
                     </button>
-                    <label class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3 rounded-lg border border-slate-300 shadow-sm transition cursor-pointer flex justify-center items-center gap-2 text-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-                        Load Project
-                        <input type="file" id="load-project-input" accept=".spec" class="hidden">
-                    </label>
                 </div>
                 <div class="flex-1 min-h-0 overflow-y-auto p-6 pt-4">
                 <h2 class="text-lg font-bold mb-4 border-b border-slate-100 pb-2 text-slate-800">1. Proposal Properties</h2>
@@ -796,6 +802,67 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             URL.revokeObjectURL(a.href);
         }
 
+        function sendForProofing() {
+            const projectData = {
+                globalRfp: document.getElementById('global-rfp').value,
+                globalBiz: document.getElementById('global-biz').value,
+                globalRep: document.getElementById('global-rep').value,
+                globalStart: document.getElementById('global-start').value,
+                globalEnd: document.getElementById('global-end').value,
+                coverTitle: document.getElementById('cover-title-input').value,
+                coverText: document.getElementById('cover-body').value,
+                customTextTitle: document.getElementById('custom-text-title-input').value,
+                customText: document.getElementById('custom-text-body').value,
+                contractTerm: document.getElementById('contract-term').value,
+                references: Array.from(document.querySelectorAll('.ref-block')).map(b => ({
+                    name: b.querySelector('.ref-name').value,
+                    org: b.querySelector('.ref-org').value,
+                    addr: b.querySelector('.ref-addr').value,
+                    phone: b.querySelector('.ref-phone').value,
+                    email: b.querySelector('.ref-email').value
+                })),
+                locations: Array.from(document.querySelectorAll('#locations-container > div')).map(block => ({
+                    name: block.querySelector('.loc-name-input').value,
+                    items: Array.from(block.querySelectorAll('.line-items-body tr')).map(tr => ({
+                        prod: tr.querySelector('.prod-name').value,
+                        price: tr.querySelector('.price-input').value,
+                        qty: tr.querySelector('.qty-input').value
+                    }))
+                })),
+                discoveryScratchpad: document.getElementById('discovery-scratchpad').value,
+                readiness: {
+                    rfpBiz: document.getElementById('check-rfp-biz').checked,
+                    cover: document.getElementById('check-cover').checked,
+                    pricing: document.getElementById('check-pricing').checked,
+                    ready: document.getElementById('check-ready').checked
+                },
+                impactCurrent: document.getElementById('impact-current').value,
+                impactProposed: document.getElementById('impact-proposed').value,
+                impactCurrentCost: document.getElementById('impact-current-cost').value,
+                impactProposedCost: document.getElementById('impact-proposed-cost').value,
+                modules: []
+            };
+            document.querySelectorAll('#module-list li').forEach(li => {
+                const cb = li.querySelector('input.slide-toggle');
+                projectData.modules.push({
+                    filename: li.getAttribute('data-filename'),
+                    checked: cb ? cb.checked : false
+                });
+            });
+            const bizName = (projectData.globalBiz || 'Proposal').trim();
+            const subject = 'Proposal spec for proofing – ' + bizName;
+            const body = 'Please review the attached proposal spec when you have a moment.\n\nThanks,';
+            const mailtoUrl = 'mailto:stinkham@gpcom.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+            window.open(mailtoUrl);
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = (projectData.globalBiz || 'GPC_Proposal').replace(/\s+/g, '_') + '.spec';
+            downloadLink.click();
+            URL.revokeObjectURL(downloadLink.href);
+            showToast('Spec saved. Your email client is opening — remember to attach the .spec file you just downloaded.', 'success');
+        }
+
         function normalizeLegacyQuillText(s) {
             if (s == null || typeof s !== 'string') return '';
             var t = s.trim();
@@ -886,6 +953,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
 
         document.getElementById('save-project-btn').addEventListener('click', saveProject);
         document.getElementById('load-project-input').addEventListener('change', loadProject);
+        document.getElementById('send-for-proofing-btn').addEventListener('click', sendForProofing);
 
         // --- Stock PDF Preview Logic ---
         function previewStockPdf(filename, title) {
