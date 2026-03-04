@@ -851,7 +851,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             });
             const bizName = (projectData.globalBiz || 'Proposal').trim();
             const subject = 'Proposal Proofing Request - ' + bizName;
-            const body = 'Please review the attached proposal spec when you have a moment.\n\nThanks,';
+            const body = 'Please find the attached proposal for your review at your convenience.\n\nThank you,';
             const mailtoUrl = 'mailto:stinkham@gpcom.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
             window.open(mailtoUrl);
             const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
