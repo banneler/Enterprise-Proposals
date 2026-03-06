@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../JenniB"
+		},
+		{
+			"path": "../Constellation-V"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Constellation-V"
+	}
+}
