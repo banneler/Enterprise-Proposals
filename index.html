@@ -7,8 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/@zumer/snapdom/dist/snapdom.js"></script>
     <style>
@@ -23,6 +25,12 @@
     #freeflow-render-zone, #pricing-render-zone, #references-render-zone {
         background-color: #FFFFFF !important; /* Force pure white background */
     }
+    #proposal-sidebar.sidebar-collapsed { width: 3rem !important; min-width: 3rem !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+    #proposal-sidebar.sidebar-collapsed #sidebar-content { display: none !important; }
+    #proposal-sidebar #sidebar-toggle { top: 50%; transform: translateY(-50%); right: 0rem; color: #cbd5e1; }
+    #proposal-sidebar #sidebar-toggle:hover { color: #64748b; background-color: #f1f5f9; }
+    #proposal-sidebar #sidebar-toggle i { color: inherit; }
+    #proposal-sidebar.sidebar-collapsed #sidebar-toggle { right: 50%; transform: translate(50%, -50%); }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans h-screen flex flex-col" style="font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;">
@@ -48,9 +56,14 @@
             <button id="generate-btn" data-state="initial" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded shadow-lg transition flex-shrink-0 disabled:opacity-70 disabled:cursor-not-allowed">Compile Proposal</button>
         </header>
 
-        <div class="flex-1 flex overflow-hidden">
+        <div class="flex-1 flex overflow-hidden min-h-0 min-w-0">
             
-            <div class="w-96 flex-shrink-0 bg-white border-r border-slate-200 shadow-inner flex flex-col min-h-0">
+            <div id="proposal-sidebar" class="min-w-[220px] w-96 max-w-[90vw] shrink bg-white border-r border-slate-200 shadow-inner flex flex-col min-h-0 h-full overflow-y-auto overflow-x-hidden transition-[width] duration-200 ease-out relative">
+                <button type="button" id="sidebar-toggle" class="absolute z-10 w-8 h-8 flex items-center justify-center rounded-lg transition" title="Minimize sidebar">
+                    <i id="sidebar-icon-minimize" class="fa-solid fa-grip-lines-vertical text-lg"></i>
+                    <i id="sidebar-icon-expand" class="fa-solid fa-chevron-right text-lg hidden"></i>
+                </button>
+                <div id="sidebar-content" class="flex flex-col w-full flex-1 min-h-0">
                 <div class="border-b border-slate-100 p-6 pb-4 flex-shrink-0 space-y-3">
                     <div class="flex gap-2">
                         <button type="button" id="save-project-btn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-3 rounded-lg shadow-sm transition text-sm flex justify-center items-center gap-2">
@@ -104,16 +117,14 @@
         <span class="flex-1 font-medium text-sm text-slate-700">Table of Contents</span>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_TEXT">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_TEXT" data-custom-index="0">
         <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" id="toggle-custom-text" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
-        <span class="flex-1 font-medium text-sm text-slate-700">Custom Page</span>
-    </li>
-    
-    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_IMPACT">
-        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
-        <input type="checkbox" id="toggle-impact-roi" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
-        <span class="flex-1 font-medium text-sm text-slate-700">Impact & ROI</span>
+        <span class="flex-1 font-medium text-sm text-slate-700 custom-page-label">Custom Page</span>
+        <div class="flex items-center gap-1 flex-shrink-0">
+            <button type="button" class="add-custom-page-btn text-slate-400 hover:text-orange-500 p-1 rounded" title="Add another Custom Page">+</button>
+            <button type="button" class="remove-custom-page-btn hidden text-slate-400 hover:text-red-500 p-1 rounded" title="Remove">−</button>
+        </div>
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="02_Why_GPC.pdf">
@@ -146,11 +157,53 @@
         <span class="flex-1 font-medium text-sm text-slate-700">Proposed Pricing</span>
     </li>
     
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400" data-filename="CUSTOM_IMPACT">
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
+        <input type="checkbox" id="toggle-impact-roi" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
+        <span class="flex-1 font-medium text-sm text-slate-700">Impact & ROI</span>
+    </li>
+    
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="04_NOC_Monitoring.pdf">
         <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
         <span class="flex-1 font-medium text-sm text-slate-700">24-Hour NOC Monitoring</span>
         <button onclick="previewStockPdf('04_NOC_Monitoring.pdf', '24-Hour NOC Monitoring')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+        </button>
+    </li>
+    
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="11_Escalation.pdf">
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
+        <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
+        <span class="flex-1 font-medium text-sm text-slate-700">Escalation Process</span>
+        <button onclick="previewStockPdf('11_Escalation.pdf', 'Escalation Process')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+        </button>
+    </li>
+    
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="09_Project.pdf">
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
+        <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
+        <span class="flex-1 font-medium text-sm text-slate-700">Project Implementation Plan</span>
+        <button onclick="previewStockPdf('09_Project.pdf', 'Project Implementation Plan')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+        </button>
+    </li>
+    
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="08_SPIN.pdf">
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
+        <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
+        <span class="flex-1 font-medium text-sm text-slate-700">SPIN ID Number</span>
+        <button onclick="previewStockPdf('08_SPIN.pdf', 'SPIN ID Number')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+        </button>
+    </li>
+    
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="10_Leadership.pdf">
+        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
+        <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
+        <span class="flex-1 font-medium text-sm text-slate-700">Senior Leadership</span>
+        <button onclick="previewStockPdf('10_Leadership.pdf', 'Senior Leadership')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
         </button>
     </li>
@@ -173,55 +226,14 @@
         </button>
     </li>
     
-    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="07_CaseStudy.pdf">
-        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
-        <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
-        <span class="flex-1 font-medium text-sm text-slate-700">Boys Town Case Study</span>
-        <button onclick="previewStockPdf('07_CaseStudy.pdf', 'Boys Town Case Study')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-        </button>
-    </li>
-    
-    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="08_SPIN.pdf">
-        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
-        <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
-        <span class="flex-1 font-medium text-sm text-slate-700">SPIN ID Number</span>
-        <button onclick="previewStockPdf('08_SPIN.pdf', 'SPIN ID Number')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-        </button>
-    </li>
-    
-    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="09_Project.pdf">
-        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
-        <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
-        <span class="flex-1 font-medium text-sm text-slate-700">Project Implementation Plan</span>
-        <button onclick="previewStockPdf('09_Project.pdf', 'Project Implementation Plan')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-        </button>
-    </li>
-    
-    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="10_Leadership.pdf">
-        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
-        <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
-        <span class="flex-1 font-medium text-sm text-slate-700">Senior Leadership</span>
-        <button onclick="previewStockPdf('10_Leadership.pdf', 'Senior Leadership')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-        </button>
-    </li>
-    
-    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group" data-filename="11_Escalation.pdf">
-        <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
-        <input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
-        <span class="flex-1 font-medium text-sm text-slate-700">Escalation Process</span>
-        <button onclick="previewStockPdf('11_Escalation.pdf', 'Escalation Process')" class="text-slate-400 hover:text-orange-500 transition px-2" title="Preview PDF">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-        </button>
-    </li>
-    
-    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-slate-400" data-filename="CUSTOM_PDF">
+    <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-slate-400" data-filename="CUSTOM_PDF" data-custom-index="0">
         <svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg>
         <input type="checkbox" id="toggle-custom-pdf" class="mr-3 w-4 h-4 text-orange-500 slide-toggle">
-        <span class="flex-1 font-medium text-sm text-slate-700">Upload Custom PDF</span>
+        <span class="flex-1 font-medium text-sm text-slate-700 custom-pdf-label">Upload Custom PDF</span>
+        <div class="flex items-center gap-1 flex-shrink-0">
+            <button type="button" class="add-custom-pdf-btn text-slate-400 hover:text-orange-500 p-1 rounded" title="Add another Custom PDF">+</button>
+            <button type="button" class="remove-custom-pdf-btn hidden text-slate-400 hover:text-red-500 p-1 rounded" title="Remove">−</button>
+        </div>
     </li>
     
     <li class="flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-slate-400" data-filename="USAC_RFP">
@@ -232,9 +244,10 @@
     
 </ul>
                 </div>
+                </div>
             </div>
 
-            <div class="flex-1 bg-slate-100 p-5 overflow-y-auto" id="scroll-container">
+            <div class="flex-1 bg-slate-100 p-5 overflow-y-auto min-w-0" id="scroll-container">
                 <div class="w-full max-w-[1680px] mx-auto space-y-8">
                     
                     <div id="cover-letter-section" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
@@ -242,14 +255,13 @@
                             <svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                             <h3 class="text-2xl font-bold text-slate-800">Cover Letter</h3>
                         </div>
-                        <input type="text" id="cover-title-input" class="w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-orange-500 font-semibold text-slate-700" placeholder="Document Title (Leave blank for cover pages)">
-                        <div class="flex gap-6 flex-nowrap items-start">
-                            <div class="w-[680px] flex-shrink-0">
+                        <div class="flex gap-6 flex-wrap justify-center items-start">
+                            <div class="flex flex-col min-w-0 w-full max-w-[680px] shrink">
                                 <textarea id="cover-body" class="w-full h-[624px] p-3 border border-slate-300 rounded-lg bg-white resize-y font-sans text-base focus:outline-none focus:border-orange-500" placeholder="Dear [Client Name]..." style="white-space: pre-wrap;"></textarea>
                             </div>
-                            <div class="flex-1 min-w-0 flex gap-4 h-[624px] overflow-hidden">
-                                <div class="w-[260px] h-[624px] flex-shrink-0 flex flex-col gap-4 overflow-hidden">
-                                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600 flex-shrink-0">
+                            <div id="cover-letter-side-elements" class="flex flex-row gap-4 flex-wrap min-w-[480px] flex-shrink-0">
+                                <div class="w-[260px] flex-shrink-0 flex flex-col gap-4">
+                                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600">
                                         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3>
                                         <p class="text-xs text-slate-400 mb-2">Inserts at cursor in the cover letter.</p>
                                         <div id="cover-snippets" class="space-y-2 overflow-auto min-h-0"></div>
@@ -264,46 +276,54 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex-1 min-w-[200px] h-[624px] min-h-0 flex flex-col overflow-hidden">
-                                    <div class="bg-white shadow-sm border border-slate-200 rounded-xl h-full flex flex-col overflow-hidden">
+                                <div class="min-w-[200px] max-w-[280px] flex flex-col flex-shrink-0">
+                                    <div class="bg-white shadow-sm border border-slate-200 rounded-xl flex flex-col overflow-hidden min-h-0">
                                         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 px-4 py-3 flex-shrink-0">Proposal Notes</h3>
-                                        <textarea id="discovery-scratchpad" class="w-full border-0 border-t border-slate-200 p-4 text-sm text-slate-800 bg-slate-50 focus:bg-white outline-none flex-1 min-h-0 resize-none" placeholder="Sites, circuit counts, bandwidth needs, contact names, quick math, raw notes…"></textarea>
+                                        <textarea id="discovery-scratchpad" class="w-full border-0 border-t border-slate-200 p-4 text-sm text-slate-800 bg-slate-50 focus:bg-white outline-none min-h-[200px] resize-none flex-1" placeholder="Sites, circuit counts, bandwidth needs, contact names, quick math, raw notes…"></textarea>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div id="custom-text-section" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
-                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2">
-                            <svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            <h3 class="text-2xl font-bold text-slate-800">Custom Page</h3>
-                        </div>
-                        <input type="text" id="custom-text-title-input" class="w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-orange-500 font-semibold text-slate-700" placeholder="Document Title (Leave blank for no header)">
-                        <div class="flex gap-6 flex-nowrap items-start">
-                            <div class="flex-1 min-w-[500px]">
-                                <textarea id="custom-text-body" class="w-full h-64 p-3 border border-slate-300 rounded-lg bg-white resize-y font-sans text-base focus:outline-none focus:border-orange-500" placeholder="Start typing custom content..." style="white-space: pre-wrap;"></textarea>
-                                <p id="warning-customText" class="hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten.</p>
+                    <div id="custom-pages-container" class="space-y-8">
+                        <div id="custom-text-section-0" class="custom-text-section hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300" data-custom-index="0">
+                            <div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2">
+                                <svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <h3 class="text-2xl font-bold text-slate-800 custom-text-section-title">Custom Page</h3>
                             </div>
-                            <div class="w-[280px] flex-shrink-0 rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600 flex flex-col gap-4">
-                                <div>
-                                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3>
-                                    <p class="text-xs text-slate-400 mb-2">Inserts at cursor in the custom page.</p>
-                                    <div id="custom-page-snippets" class="space-y-2 overflow-auto min-h-0"></div>
+                            <input type="text" id="custom-text-title-input" class="custom-text-title-input w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-orange-500 font-semibold text-slate-700" placeholder="Document Title (required for Table of Contents)">
+                            <div class="flex gap-6 flex-nowrap items-start">
+                                <div class="flex-1 min-w-[500px]">
+                                    <textarea id="custom-text-body" class="custom-text-body w-full h-64 p-3 border border-slate-300 rounded-lg bg-white resize-y font-sans text-base focus:outline-none focus:border-orange-500" placeholder="Start typing custom content..." style="white-space: pre-wrap;"></textarea>
+                                    <p id="warning-customText" class="warning-customText hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten.</p>
+                                </div>
+                                <div class="w-[280px] flex-shrink-0 rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600 flex flex-col gap-4">
+                                    <div>
+                                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3>
+                                        <p class="text-xs text-slate-400 mb-2">Inserts at cursor in the custom page.</p>
+                                        <div id="custom-page-snippets" class="space-y-2 overflow-auto min-h-0"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div id="custom-pdf-section" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300">
-                        <div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2">
-                            <svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                            <h3 class="text-2xl font-bold text-slate-800">Upload Custom PDF (Exec Summary, etc.)</h3>
-                        </div>
-                        <input type="file" id="custom-pdf-upload" class="hidden" accept="application/pdf">
-                        <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50 hover:bg-orange-50 hover:border-orange-400 transition cursor-pointer group" onclick="document.getElementById('custom-pdf-upload').click()">
-                            <svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-orange-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                            <span id="custom-pdf-filename" class="mt-2 block text-slate-600 font-medium group-hover:text-orange-600">Drag and drop Custom PDF here, or click to browse</span>
+                    <div id="custom-pdfs-container" class="space-y-8">
+                        <div id="custom-pdf-section-0" class="custom-pdf-section hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300" data-custom-index="0">
+                            <div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2">
+                                <svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                <h3 class="text-2xl font-bold text-slate-800 custom-pdf-section-title">Upload Custom PDF (Exec Summary, etc.)</h3>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Section name for Table of Contents <span class="text-orange-500">*</span></label>
+                                <input type="text" id="custom-pdf-section-name" class="custom-pdf-section-name w-full border border-slate-300 p-2 rounded-lg bg-slate-50 focus:bg-white outline-none focus:border-orange-500 font-medium text-slate-700" maxlength="80" placeholder="e.g. Executive Summary">
+                            </div>
+                            <input type="file" id="custom-pdf-upload" class="custom-pdf-upload hidden" accept="application/pdf">
+                            <div class="custom-pdf-dropzone border-2 border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50 hover:bg-orange-50 hover:border-orange-400 transition cursor-pointer group" onclick="this.closest('.custom-pdf-section').querySelector('.custom-pdf-upload').click()">
+                                <svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-orange-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                <span class="custom-pdf-filename mt-2 block text-slate-600 font-medium group-hover:text-orange-600">Drag and drop Custom PDF here, or click to browse</span>
+                            </div>
                         </div>
                     </div>
 
@@ -594,9 +614,36 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             });
         }
         toggleSection('toggle-cover-letter', 'cover-letter-section');
-        toggleSection('toggle-custom-text', 'custom-text-section');
+        function syncCustomSectionsVisibility() {
+            const customPageLis = document.querySelectorAll('#module-list li[data-filename="CUSTOM_TEXT"]');
+            const customPdfLis = document.querySelectorAll('#module-list li[data-filename="CUSTOM_PDF"]');
+            const pagesContainer = document.getElementById('custom-pages-container');
+            const pdfsContainer = document.getElementById('custom-pdfs-container');
+            let anyPageChecked = false;
+            customPageLis.forEach(li => {
+                const idx = li.getAttribute('data-custom-index');
+                const section = document.getElementById('custom-text-section-' + idx);
+                const checked = li.querySelector('.slide-toggle') && li.querySelector('.slide-toggle').checked;
+                if (section) section.style.display = checked ? 'block' : 'none';
+                if (checked) anyPageChecked = true;
+            });
+            pagesContainer.style.display = anyPageChecked ? 'block' : 'none';
+            let anyPdfChecked = false;
+            customPdfLis.forEach(li => {
+                const idx = li.getAttribute('data-custom-index');
+                const section = document.getElementById('custom-pdf-section-' + idx);
+                const checked = li.querySelector('.slide-toggle') && li.querySelector('.slide-toggle').checked;
+                if (section) section.style.display = checked ? 'block' : 'none';
+                if (checked) anyPdfChecked = true;
+            });
+            pdfsContainer.style.display = anyPdfChecked ? 'block' : 'none';
+        }
+        document.getElementById('module-list').addEventListener('change', function(e) {
+            if (!e.target.classList.contains('slide-toggle')) return;
+            const li = e.target.closest('li[data-filename="CUSTOM_TEXT"], li[data-filename="CUSTOM_PDF"]');
+            if (li) syncCustomSectionsVisibility();
+        });
         toggleSection('toggle-impact-roi', 'impact-roi-section');
-        toggleSection('toggle-custom-pdf', 'custom-pdf-section');
         toggleSection('toggle-references', 'references-section');
         toggleSection('toggle-pricing', 'pricing-section');
         toggleSection('toggle-usac', 'usac-upload-section');
@@ -630,12 +677,125 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
         }
         new Sortable(document.getElementById('module-list'), { animation: 150, handle: '.handle', ghostClass: 'bg-orange-50', onEnd: function() { if (!_suppressDirty) setDirty(true); } });
 
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('proposal-sidebar');
+            const iconMin = document.getElementById('sidebar-icon-minimize');
+            const iconExp = document.getElementById('sidebar-icon-expand');
+            sidebar.classList.toggle('sidebar-collapsed');
+            if (sidebar.classList.contains('sidebar-collapsed')) {
+                iconMin.classList.add('hidden');
+                iconExp.classList.remove('hidden');
+                this.setAttribute('title', 'Expand sidebar');
+            } else {
+                iconMin.classList.remove('hidden');
+                iconExp.classList.add('hidden');
+                this.setAttribute('title', 'Minimize sidebar');
+            }
+        });
+
+        function updateCustomPageRowLabels() {
+            document.querySelectorAll('#module-list li[data-filename="CUSTOM_TEXT"]').forEach((li, i) => {
+                const label = li.querySelector('.custom-page-label');
+                if (label) label.textContent = i === 0 ? 'Custom Page' : 'Custom Page ' + (i + 1);
+                const removeBtn = li.querySelector('.remove-custom-page-btn');
+                if (removeBtn) removeBtn.classList.toggle('hidden', document.querySelectorAll('#module-list li[data-filename="CUSTOM_TEXT"]').length <= 1);
+            });
+        }
+        function updateCustomPdfRowLabels() {
+            document.querySelectorAll('#module-list li[data-filename="CUSTOM_PDF"]').forEach((li, i) => {
+                const label = li.querySelector('.custom-pdf-label');
+                if (label) label.textContent = i === 0 ? 'Upload Custom PDF' : 'Upload Custom PDF ' + (i + 1);
+                const removeBtn = li.querySelector('.remove-custom-pdf-btn');
+                if (removeBtn) removeBtn.classList.toggle('hidden', document.querySelectorAll('#module-list li[data-filename="CUSTOM_PDF"]').length <= 1);
+            });
+        }
+        document.getElementById('module-list').addEventListener('click', function(e) {
+            const addPage = e.target.closest('.add-custom-page-btn');
+            const removePage = e.target.closest('.remove-custom-page-btn');
+            const addPdf = e.target.closest('.add-custom-pdf-btn');
+            const removePdf = e.target.closest('.remove-custom-pdf-btn');
+            if (addPage) {
+                e.preventDefault();
+                const lis = document.querySelectorAll('#module-list li[data-filename="CUSTOM_TEXT"]');
+                const last = lis[lis.length - 1];
+                const nextIdx = 1 + Math.max(0, ...Array.from(lis).map(li => parseInt(li.getAttribute('data-custom-index') || '0', 10)));
+                const newLi = document.createElement('li');
+                newLi.className = 'flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400';
+                newLi.setAttribute('data-filename', 'CUSTOM_TEXT');
+                newLi.setAttribute('data-custom-index', String(nextIdx));
+                newLi.innerHTML = '<svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg><input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle"><span class="flex-1 font-medium text-sm text-slate-700 custom-page-label">Custom Page ' + (nextIdx + 1) + '</span><div class="flex items-center gap-1 flex-shrink-0"><button type="button" class="add-custom-page-btn text-slate-400 hover:text-orange-500 p-1 rounded" title="Add another Custom Page">+</button><button type="button" class="remove-custom-page-btn text-slate-400 hover:text-red-500 p-1 rounded" title="Remove">−</button></div>';
+                last.insertAdjacentElement('afterend', newLi);
+                const container = document.getElementById('custom-pages-container');
+                const section = document.createElement('div');
+                section.id = 'custom-text-section-' + nextIdx;
+                section.className = 'custom-text-section hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300';
+                section.setAttribute('data-custom-index', String(nextIdx));
+                section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-text-section-title">Custom Page ' + (nextIdx + 1) + '</h3></div><input type="text" id="custom-text-title-input-' + nextIdx + '" class="custom-text-title-input w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-orange-500 font-semibold text-slate-700" placeholder="Document Title (required for Table of Contents)"><div class="flex gap-6 flex-nowrap items-start"><div class="flex-1 min-w-[500px]"><textarea id="custom-text-body-' + nextIdx + '" class="custom-text-body w-full h-64 p-3 border border-slate-300 rounded-lg bg-white resize-y font-sans text-base focus:outline-none focus:border-orange-500" placeholder="Start typing custom content..." style="white-space: pre-wrap;"></textarea><p class="warning-customText hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten.</p></div><div class="w-[280px] flex-shrink-0 rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600 flex flex-col gap-4"><div><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3><p class="text-xs text-slate-400 mb-2">Inserts at cursor in the custom page.</p><div class="custom-page-snippets space-y-2 overflow-auto min-h-0"></div></div></div></div>';
+                container.appendChild(section);
+                updateCustomPageRowLabels();
+                syncCustomSectionsVisibility();
+                if (!_suppressDirty) setDirty(true);
+            } else if (removePage) {
+                e.preventDefault();
+                const li = removePage.closest('li[data-filename="CUSTOM_TEXT"]');
+                if (!li || document.querySelectorAll('#module-list li[data-filename="CUSTOM_TEXT"]').length <= 1) return;
+                const idx = li.getAttribute('data-custom-index');
+                li.remove();
+                const section = document.getElementById('custom-text-section-' + idx);
+                if (section) section.remove();
+                updateCustomPageRowLabels();
+                syncCustomSectionsVisibility();
+                if (!_suppressDirty) setDirty(true);
+            } else if (addPdf) {
+                e.preventDefault();
+                const lis = document.querySelectorAll('#module-list li[data-filename="CUSTOM_PDF"]');
+                const last = lis[lis.length - 1];
+                const nextIdx = 1 + Math.max(0, ...Array.from(lis).map(li => parseInt(li.getAttribute('data-custom-index') || '0', 10)));
+                const newLi = document.createElement('li');
+                newLi.className = 'flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-slate-400';
+                newLi.setAttribute('data-filename', 'CUSTOM_PDF');
+                newLi.setAttribute('data-custom-index', String(nextIdx));
+                newLi.innerHTML = '<svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg><input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle"><span class="flex-1 font-medium text-sm text-slate-700 custom-pdf-label">Upload Custom PDF ' + (nextIdx + 1) + '</span><div class="flex items-center gap-1 flex-shrink-0"><button type="button" class="add-custom-pdf-btn text-slate-400 hover:text-orange-500 p-1 rounded" title="Add another Custom PDF">+</button><button type="button" class="remove-custom-pdf-btn text-slate-400 hover:text-red-500 p-1 rounded" title="Remove">−</button></div>';
+                last.insertAdjacentElement('afterend', newLi);
+                const container = document.getElementById('custom-pdfs-container');
+                const section = document.createElement('div');
+                section.id = 'custom-pdf-section-' + nextIdx;
+                section.className = 'custom-pdf-section hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300';
+                section.setAttribute('data-custom-index', String(nextIdx));
+                section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-pdf-section-title">Upload Custom PDF ' + (nextIdx + 1) + '</h3></div><div class="mb-4"><label class="block text-sm font-semibold text-slate-700 mb-1">Section name for Table of Contents <span class="text-orange-500">*</span></label><input type="text" id="custom-pdf-section-name-' + nextIdx + '" class="custom-pdf-section-name w-full border border-slate-300 p-2 rounded-lg bg-slate-50 focus:bg-white outline-none focus:border-orange-500 font-medium text-slate-700" maxlength="80" placeholder="e.g. Executive Summary"></div><input type="file" id="custom-pdf-upload-' + nextIdx + '" class="custom-pdf-upload hidden" accept="application/pdf"><div class="custom-pdf-dropzone border-2 border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50 hover:bg-orange-50 hover:border-orange-400 transition cursor-pointer group" onclick="this.closest(\'.custom-pdf-section\').querySelector(\'.custom-pdf-upload\').click()"><svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-orange-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg><span class="custom-pdf-filename mt-2 block text-slate-600 font-medium group-hover:text-orange-600">Drag and drop Custom PDF here, or click to browse</span></div></div>';
+                container.appendChild(section);
+                updateCustomPdfRowLabels();
+                syncCustomSectionsVisibility();
+                if (!_suppressDirty) setDirty(true);
+            } else if (removePdf) {
+                e.preventDefault();
+                const li = removePdf.closest('li[data-filename="CUSTOM_PDF"]');
+                if (!li || document.querySelectorAll('#module-list li[data-filename="CUSTOM_PDF"]').length <= 1) return;
+                const idx = li.getAttribute('data-custom-index');
+                li.remove();
+                const section = document.getElementById('custom-pdf-section-' + idx);
+                if (section) section.remove();
+                updateCustomPdfRowLabels();
+                syncCustomSectionsVisibility();
+                if (!_suppressDirty) setDirty(true);
+            }
+        });
+        updateCustomPageRowLabels();
+        updateCustomPdfRowLabels();
+
         // --- File Upload Handlers ---
         document.getElementById('usac-upload').addEventListener('change', e => {
             document.getElementById('usac-filename').textContent = e.target.files[0] ? e.target.files[0].name : "Drag and drop USAC RFP PDF here";
         });
         document.getElementById('custom-pdf-upload').addEventListener('change', e => {
-            document.getElementById('custom-pdf-filename').textContent = e.target.files[0] ? e.target.files[0].name : "Drag and drop Custom PDF here";
+            const section = e.target.closest('.custom-pdf-section');
+            if (section) section.querySelector('.custom-pdf-filename').textContent = e.target.files[0] ? e.target.files[0].name : "Drag and drop Custom PDF here, or click to browse";
+        });
+        document.getElementById('custom-pdfs-container').addEventListener('change', e => {
+            if (e.target.classList.contains('custom-pdf-upload')) {
+                const section = e.target.closest('.custom-pdf-section');
+                if (section) section.querySelector('.custom-pdf-filename').textContent = e.target.files[0] ? e.target.files[0].name : "Drag and drop Custom PDF here, or click to browse";
+            }
         });
 
         // --- Input Generation ---
@@ -717,6 +877,17 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             });
         }
 
+        function getBandwidthPlusProductSuggestions(text) {
+            if (!text || typeof text !== 'string') return [];
+            var match = text.match(/^(\d+(?:\.\d+)?\s*(?:Mbps|Gbps))\s+(.+)$/i);
+            if (!match) return [];
+            var prefix = match[1];
+            var suffix = match[2].trim();
+            if (suffix.length < 2) return [];
+            var products = getProductSuggestions(suffix);
+            return products.map(function (p) { return prefix + ' ' + p; });
+        }
+
         function addRow(block, data) {
             const tbody = block.querySelector('.line-items-body');
             const prod = (data && data.prod != null) ? String(data.prod).replace(/&/g, '&amp;').replace(/"/g, '&quot;') : '';
@@ -745,8 +916,12 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 const val = this.value.trim();
                 const bandwidthSuggestion = getBandwidthSuggestion(this.value);
                 const productMatches = getProductSuggestions(this.value);
+                const bandwidthPlusProduct = getBandwidthPlusProductSuggestions(this.value);
                 var items = [];
                 if (bandwidthSuggestion && bandwidthSuggestion !== val) items.push(bandwidthSuggestion);
+                bandwidthPlusProduct.forEach(function (s) {
+                    if (s !== val && items.indexOf(s) === -1) items.push(s);
+                });
                 productMatches.forEach(function (name) {
                     if (name !== val && items.indexOf(name) === -1) items.push(name);
                 });
@@ -826,7 +1001,6 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 globalRep: document.getElementById('global-rep').value,
                 globalStart: document.getElementById('global-start').value,
                 globalEnd: document.getElementById('global-end').value,
-                coverTitle: document.getElementById('cover-title-input').value,
                 coverText: document.getElementById('cover-body').value,
                 customTextTitle: document.getElementById('custom-text-title-input').value,
                 customText: document.getElementById('custom-text-body').value,
@@ -847,6 +1021,27 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                     }))
                 })),
                 discoveryScratchpad: document.getElementById('discovery-scratchpad').value,
+                customPages: (function(){
+                    const o = {};
+                    document.querySelectorAll('#module-list li[data-filename="CUSTOM_TEXT"]').forEach(li => {
+                        const idx = li.getAttribute('data-custom-index') || '0';
+                        const titleEl = document.getElementById('custom-text-title-input' + (idx === '0' ? '' : '-' + idx));
+                        const bodyEl = document.getElementById('custom-text-body' + (idx === '0' ? '' : '-' + idx));
+                        o[idx] = { title: (titleEl && titleEl.value) ? titleEl.value : '', body: (bodyEl && bodyEl.value) ? bodyEl.value : '' };
+                    });
+                    return o;
+                })(),
+                customPdfs: (function(){
+                    const o = {};
+                    document.querySelectorAll('#module-list li[data-filename="CUSTOM_PDF"]').forEach(li => {
+                        const idx = li.getAttribute('data-custom-index') || '0';
+                        const nameEl = document.getElementById('custom-pdf-section-name' + (idx === '0' ? '' : '-' + idx));
+                        const fileEl = document.getElementById('custom-pdf-upload' + (idx === '0' ? '' : '-' + idx));
+                        o[idx] = { sectionName: (nameEl && nameEl.value) ? nameEl.value : '', fileName: (fileEl && fileEl.files[0]) ? fileEl.files[0].name : '' };
+                    });
+                    return o;
+                })(),
+                customPdfSectionName: (document.getElementById('custom-pdf-section-name') && document.getElementById('custom-pdf-section-name').value) ? document.getElementById('custom-pdf-section-name').value : '',
                 readiness: {
                     rfpBiz: document.getElementById('check-rfp-biz').checked,
                     cover: document.getElementById('check-cover').checked,
@@ -862,8 +1057,11 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             setDirty(false);
             document.querySelectorAll('#module-list li').forEach(li => {
                 const cb = li.querySelector('input.slide-toggle');
+                const fn = li.getAttribute('data-filename');
+                const customIndex = li.getAttribute('data-custom-index');
                 projectData.modules.push({
-                    filename: li.getAttribute('data-filename'),
+                    filename: fn,
+                    customIndex: (fn === 'CUSTOM_TEXT' || fn === 'CUSTOM_PDF') ? (customIndex || '0') : undefined,
                     checked: cb ? cb.checked : false
                 });
             });
@@ -882,7 +1080,6 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 globalRep: document.getElementById('global-rep').value,
                 globalStart: document.getElementById('global-start').value,
                 globalEnd: document.getElementById('global-end').value,
-                coverTitle: document.getElementById('cover-title-input').value,
                 coverText: document.getElementById('cover-body').value,
                 customTextTitle: document.getElementById('custom-text-title-input').value,
                 customText: document.getElementById('custom-text-body').value,
@@ -903,6 +1100,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                     }))
                 })),
                 discoveryScratchpad: document.getElementById('discovery-scratchpad').value,
+                customPdfSectionName: (document.getElementById('custom-pdf-section-name') && document.getElementById('custom-pdf-section-name').value) ? document.getElementById('custom-pdf-section-name').value : '',
                 readiness: {
                     rfpBiz: document.getElementById('check-rfp-biz').checked,
                     cover: document.getElementById('check-cover').checked,
@@ -917,8 +1115,11 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             };
             document.querySelectorAll('#module-list li').forEach(li => {
                 const cb = li.querySelector('input.slide-toggle');
+                const fn = li.getAttribute('data-filename');
+                const customIndex = li.getAttribute('data-custom-index');
                 projectData.modules.push({
-                    filename: li.getAttribute('data-filename'),
+                    filename: fn,
+                    customIndex: (fn === 'CUSTOM_TEXT' || fn === 'CUSTOM_PDF') ? (customIndex || '0') : undefined,
                     checked: cb ? cb.checked : false
                 });
             });
@@ -957,10 +1158,63 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                     if (data.globalRep != null) document.getElementById('global-rep').value = data.globalRep;
                     if (data.globalStart != null) document.getElementById('global-start').value = data.globalStart;
                     if (data.globalEnd != null) document.getElementById('global-end').value = data.globalEnd;
-                    if (data.coverTitle != null) document.getElementById('cover-title-input').value = data.coverTitle;
                     if (data.coverText != null) document.getElementById('cover-body').value = normalizeLegacyQuillText(data.coverText);
-                    if (data.customTextTitle != null) document.getElementById('custom-text-title-input').value = data.customTextTitle;
-                    if (data.customText != null) document.getElementById('custom-text-body').value = normalizeLegacyQuillText(data.customText);
+                    const customPages = data.customPages || (data.customTextTitle != null ? { '0': { title: data.customTextTitle, body: (data.customText != null ? data.customText : '') } } : {});
+                    const customPdfs = data.customPdfs || (data.customPdfSectionName != null ? { '0': { sectionName: data.customPdfSectionName, fileName: '' } } : {});
+                    const customPageIndices = Object.keys(customPages).map(Number).sort((a,b)=>a-b);
+                    const customPdfIndices = Object.keys(customPdfs).map(Number).sort((a,b)=>a-b);
+                    for (let k = 1; k < customPageIndices.length; k++) {
+                        const nextIdx = customPageIndices[k];
+                        const lis = document.querySelectorAll('#module-list li[data-filename="CUSTOM_TEXT"]');
+                        const last = lis[lis.length - 1];
+                        const newLi = document.createElement('li');
+                        newLi.className = 'flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-orange-400';
+                        newLi.setAttribute('data-filename', 'CUSTOM_TEXT');
+                        newLi.setAttribute('data-custom-index', String(nextIdx));
+                        newLi.innerHTML = '<svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg><input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle"><span class="flex-1 font-medium text-sm text-slate-700 custom-page-label">Custom Page ' + (nextIdx + 1) + '</span><div class="flex items-center gap-1 flex-shrink-0"><button type="button" class="add-custom-page-btn text-slate-400 hover:text-orange-500 p-1 rounded" title="Add another Custom Page">+</button><button type="button" class="remove-custom-page-btn text-slate-400 hover:text-red-500 p-1 rounded" title="Remove">−</button></div>';
+                        last.insertAdjacentElement('afterend', newLi);
+                        const container = document.getElementById('custom-pages-container');
+                        const section = document.createElement('div');
+                        section.id = 'custom-text-section-' + nextIdx;
+                        section.className = 'custom-text-section hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300';
+                        section.setAttribute('data-custom-index', String(nextIdx));
+                        section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-text-section-title">Custom Page ' + (nextIdx + 1) + '</h3></div><input type="text" id="custom-text-title-input-' + nextIdx + '" class="custom-text-title-input w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-orange-500 font-semibold text-slate-700" placeholder="Document Title (required for Table of Contents)"><div class="flex gap-6 flex-nowrap items-start"><div class="flex-1 min-w-[500px]"><textarea id="custom-text-body-' + nextIdx + '" class="custom-text-body w-full h-64 p-3 border border-slate-300 rounded-lg bg-white resize-y font-sans text-base focus:outline-none focus:border-orange-500" placeholder="Start typing custom content..." style="white-space: pre-wrap;"></textarea><p class="warning-customText hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten.</p></div><div class="w-[280px] flex-shrink-0 rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600 flex flex-col gap-4"><div><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3><p class="text-xs text-slate-400 mb-2">Inserts at cursor in the custom page.</p><div class="custom-page-snippets space-y-2 overflow-auto min-h-0"></div></div></div></div>';
+                        container.appendChild(section);
+                    }
+                    for (let k = 1; k < customPdfIndices.length; k++) {
+                        const nextIdx = customPdfIndices[k];
+                        const lis = document.querySelectorAll('#module-list li[data-filename="CUSTOM_PDF"]');
+                        const last = lis[lis.length - 1];
+                        const newLi = document.createElement('li');
+                        newLi.className = 'flex items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm cursor-grab group border-l-4 border-l-slate-400';
+                        newLi.setAttribute('data-filename', 'CUSTOM_PDF');
+                        newLi.setAttribute('data-custom-index', String(nextIdx));
+                        newLi.innerHTML = '<svg class="w-5 h-5 handle text-slate-400 group-hover:text-orange-500 transition cursor-grab mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"></path></svg><input type="checkbox" class="mr-3 w-4 h-4 text-orange-500 slide-toggle"><span class="flex-1 font-medium text-sm text-slate-700 custom-pdf-label">Upload Custom PDF ' + (nextIdx + 1) + '</span><div class="flex items-center gap-1 flex-shrink-0"><button type="button" class="add-custom-pdf-btn text-slate-400 hover:text-orange-500 p-1 rounded" title="Add another Custom PDF">+</button><button type="button" class="remove-custom-pdf-btn text-slate-400 hover:text-red-500 p-1 rounded" title="Remove">−</button></div>';
+                        last.insertAdjacentElement('afterend', newLi);
+                        const container = document.getElementById('custom-pdfs-container');
+                        const section = document.createElement('div');
+                        section.id = 'custom-pdf-section-' + nextIdx;
+                        section.className = 'custom-pdf-section hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300';
+                        section.setAttribute('data-custom-index', String(nextIdx));
+                        section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-pdf-section-title">Upload Custom PDF ' + (nextIdx + 1) + '</h3></div><div class="mb-4"><label class="block text-sm font-semibold text-slate-700 mb-1">Section name for Table of Contents <span class="text-orange-500">*</span></label><input type="text" id="custom-pdf-section-name-' + nextIdx + '" class="custom-pdf-section-name w-full border border-slate-300 p-2 rounded-lg bg-slate-50 focus:bg-white outline-none focus:border-orange-500 font-medium text-slate-700" maxlength="80" placeholder="e.g. Executive Summary"></div><input type="file" id="custom-pdf-upload-' + nextIdx + '" class="custom-pdf-upload hidden" accept="application/pdf"><div class="custom-pdf-dropzone border-2 border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50 hover:bg-orange-50 hover:border-orange-400 transition cursor-pointer group" onclick="this.closest(\'.custom-pdf-section\').querySelector(\'.custom-pdf-upload\').click()"><svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-orange-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg><span class="custom-pdf-filename mt-2 block text-slate-600 font-medium group-hover:text-orange-600">Drag and drop Custom PDF here, or click to browse</span></div></div>';
+                        container.appendChild(section);
+                    }
+                    if (typeof updateCustomPageRowLabels === 'function') updateCustomPageRowLabels();
+                    if (typeof updateCustomPdfRowLabels === 'function') updateCustomPdfRowLabels();
+                    Object.keys(customPages).forEach(idx => {
+                        const titleEl = document.getElementById('custom-text-title-input' + (idx === '0' ? '' : '-' + idx));
+                        const bodyEl = document.getElementById('custom-text-body' + (idx === '0' ? '' : '-' + idx));
+                        const page = customPages[idx];
+                        if (titleEl && page && page.title != null) titleEl.value = page.title;
+                        if (bodyEl && page && page.body != null) bodyEl.value = normalizeLegacyQuillText(page.body);
+                    });
+                    Object.keys(customPdfs).forEach(idx => {
+                        const nameEl = document.getElementById('custom-pdf-section-name' + (idx === '0' ? '' : '-' + idx));
+                        const pdf = customPdfs[idx];
+                        if (nameEl && pdf && pdf.sectionName != null) nameEl.value = pdf.sectionName;
+                    });
+                    if (data.customTextTitle != null && !data.customPages) document.getElementById('custom-text-title-input').value = data.customTextTitle;
+                    if (data.customText != null && !data.customPages) document.getElementById('custom-text-body').value = normalizeLegacyQuillText(data.customText);
                     if (data.contractTerm != null) document.getElementById('contract-term').value = data.contractTerm;
                     if (data.references && data.references.length) {
                         const refBlocks = document.querySelectorAll('.ref-block');
@@ -998,18 +1252,20 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                     if (typeof updateImpactNet === 'function') updateImpactNet();
                     if (data.modules && data.modules.length) {
                         data.modules.forEach(m => {
-                            const li = document.querySelector(`#module-list li[data-filename="${m.filename}"]`);
+                            const lis = document.querySelectorAll('#module-list li[data-filename="' + m.filename + '"]');
+                            const li = (m.customIndex != null && m.customIndex !== undefined) ? Array.from(lis).find(l => l.getAttribute('data-custom-index') === String(m.customIndex)) : lis[0];
                             if (li) {
                                 const cb = li.querySelector('input.slide-toggle');
                                 if (cb) cb.checked = !!m.checked;
                             }
                         });
                         document.getElementById('toggle-cover-letter').dispatchEvent(new Event('change'));
-                        document.getElementById('toggle-custom-text').dispatchEvent(new Event('change'));
+                        if (document.getElementById('toggle-custom-text')) document.getElementById('toggle-custom-text').dispatchEvent(new Event('change'));
+                        if (typeof syncCustomSectionsVisibility === 'function') syncCustomSectionsVisibility();
                         if (document.getElementById('toggle-impact-roi')) document.getElementById('toggle-impact-roi').dispatchEvent(new Event('change'));
                         document.getElementById('toggle-references').dispatchEvent(new Event('change'));
                         document.getElementById('toggle-pricing').dispatchEvent(new Event('change'));
-                        document.getElementById('toggle-custom-pdf').dispatchEvent(new Event('change'));
+                        if (document.getElementById('toggle-custom-pdf')) document.getElementById('toggle-custom-pdf').dispatchEvent(new Event('change'));
                         document.getElementById('toggle-usac').dispatchEvent(new Event('change'));
                     }
                     showToast('Project loaded.', 'success');
@@ -1070,16 +1326,54 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
         function getPayload() {
             const activeSlides = [];
             document.querySelectorAll('#module-list li').forEach(li => {
-                if (li.querySelector('.slide-toggle').checked) activeSlides.push(li.getAttribute('data-filename'));
+                if (!li.querySelector('.slide-toggle').checked) return;
+                const fn = li.getAttribute('data-filename');
+                const idx = li.getAttribute('data-custom-index');
+                if (fn === 'CUSTOM_TEXT' || fn === 'CUSTOM_PDF') activeSlides.push(fn + (idx != null ? ':' + idx : ':0'));
+                else activeSlides.push(fn);
             });
-            const customPdfFile = document.getElementById('custom-pdf-upload').files[0];
-            if (activeSlides.includes('CUSTOM_PDF') && !customPdfFile) { alert("Please select a file for the Custom PDF Upload."); return null; }
+            const customPages = {};
+            document.querySelectorAll('#module-list li[data-filename="CUSTOM_TEXT"]').forEach(li => {
+                const idx = li.getAttribute('data-custom-index') || '0';
+                const titleEl = document.getElementById('custom-text-title-input' + (idx === '0' ? '' : '-' + idx));
+                const bodyEl = document.getElementById('custom-text-body' + (idx === '0' ? '' : '-' + idx));
+                customPages[idx] = { title: (titleEl && titleEl.value) ? titleEl.value.trim() : '', body: (bodyEl && bodyEl.value) ? bodyEl.value : '' };
+            });
+            const customPdfs = {};
+            document.querySelectorAll('#module-list li[data-filename="CUSTOM_PDF"]').forEach(li => {
+                const idx = li.getAttribute('data-custom-index') || '0';
+                const nameEl = document.getElementById('custom-pdf-section-name' + (idx === '0' ? '' : '-' + idx));
+                const fileEl = document.getElementById('custom-pdf-upload' + (idx === '0' ? '' : '-' + idx));
+                const file = fileEl && fileEl.files[0];
+                customPdfs[idx] = { sectionName: (nameEl && nameEl.value) ? nameEl.value.trim() : '', file: file };
+            });
+            if (activeSlides.includes('TOC')) {
+                for (let i = 0; i < activeSlides.length; i++) {
+                    const s = activeSlides[i];
+                    if (s.startsWith('CUSTOM_TEXT:')) {
+                        const idx = s.split(':')[1];
+                        if (!(customPages[idx] && customPages[idx].title)) { alert("Please enter a Document Title for every Custom Page (required for Table of Contents)."); return null; }
+                    }
+                    if (s.startsWith('CUSTOM_PDF:')) {
+                        const idx = s.split(':')[1];
+                        if (!(customPdfs[idx] && customPdfs[idx].sectionName)) { alert("Please enter a Section name for every Custom PDF (required for Table of Contents)."); return null; }
+                    }
+                }
+            }
+            for (let i = 0; i < activeSlides.length; i++) {
+                const s = activeSlides[i];
+                if (s.startsWith('CUSTOM_PDF:')) {
+                    const idx = s.split(':')[1];
+                    if (!(customPdfs[idx] && customPdfs[idx].file)) { alert("Please select a file for every Upload Custom PDF."); return null; }
+                }
+            }
             const usacFile = document.getElementById('usac-upload').files[0];
             if (activeSlides.includes('USAC_RFP') && !usacFile) { alert("Please select a file for the USAC RFP Upload."); return null; }
             return {
                 globals: { biz: document.getElementById('global-biz').value },
                 slides: activeSlides,
-                customPdfFile: customPdfFile,
+                customPages: customPages,
+                customPdfs: customPdfs,
                 usacFile: usacFile
             };
         }
@@ -1287,16 +1581,24 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             continue;
         }
         if (slideFile === 'CUSTOM_COVER') {
-            const displayTitle = document.getElementById('cover-title-input').value || '';
             const bodyHtml = textToHtml(document.getElementById('cover-body').value);
-            const canvas = await captureInteriorPageGPC(displayTitle, bodyHtml, { extraPaddingTop: 46 });
+            const canvas = await captureInteriorPageGPC('', bodyHtml, { extraPaddingTop: 46 });
             await addPageFromCanvas(canvas);
             continue;
         }
         if (slideFile === 'TOC') {
             const tocEntries = payload.slides.filter(f => f !== 'TOC' && f !== '01_Title_Page.pdf').map((filename, idx) => {
-                const li = document.querySelector(`#module-list li[data-filename="${filename}"]`);
-                const label = (li && li.querySelector('span.flex-1')) ? (li.querySelector('span.flex-1').textContent || '').trim() : filename;
+                let label;
+                if (filename.startsWith('CUSTOM_TEXT:')) {
+                    const i = filename.split(':')[1];
+                    label = (payload.customPages && payload.customPages[i] && payload.customPages[i].title) ? payload.customPages[i].title : 'Custom Page';
+                } else if (filename.startsWith('CUSTOM_PDF:')) {
+                    const i = filename.split(':')[1];
+                    label = (payload.customPdfs && payload.customPdfs[i] && payload.customPdfs[i].sectionName) ? payload.customPdfs[i].sectionName : 'Upload Custom PDF';
+                } else {
+                    const li = document.querySelector(`#module-list li[data-filename="${filename}"]`);
+                    label = (li && li.querySelector('span.flex-1')) ? (li.querySelector('span.flex-1').textContent || '').trim() : filename;
+                }
                 return { num: idx + 1, label: label || filename };
             });
             const tocBodyHtml = tocEntries.length ? tocEntries.map(e => '<p style="margin-bottom: 0.6rem;">' + e.num + '. ' + escapeHtml(e.label) + '</p>').join('') : '<p style="color:#64748b;">No sections in this proposal.</p>';
@@ -1304,9 +1606,11 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             await addPageFromCanvas(canvas);
             continue;
         }
-        if (slideFile === 'CUSTOM_TEXT') {
-            const customTitle = document.getElementById('custom-text-title-input').value || '';
-            const bodyHtml = textToHtml(document.getElementById('custom-text-body').value);
+        if (slideFile.startsWith('CUSTOM_TEXT:')) {
+            const idx = slideFile.split(':')[1];
+            const page = payload.customPages && payload.customPages[idx];
+            const customTitle = (page && page.title) ? page.title : '';
+            const bodyHtml = textToHtml((page && page.body) ? page.body : '');
             const canvas = await captureInteriorPageGPC(customTitle, bodyHtml, { extraPaddingTop: 46 });
             await addPageFromCanvas(canvas);
             continue;
@@ -1447,7 +1751,12 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 }
             }
         }
-        else if (slideFile === 'CUSTOM_PDF') { await appendUploadedPdf(payload.customPdfFile); }
+        else if (slideFile.startsWith('CUSTOM_PDF:')) {
+            const idx = slideFile.split(':')[1];
+            const pdfEntry = payload.customPdfs && payload.customPdfs[idx];
+            if (pdfEntry && pdfEntry.file) await appendUploadedPdf(pdfEntry.file);
+            continue;
+        }
         else if (slideFile === 'USAC_RFP') { await appendUploadedPdf(payload.usacFile); }
         else {
             try {
